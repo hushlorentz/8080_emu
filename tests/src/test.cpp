@@ -1,4 +1,4 @@
-#include "disassembler.h"
+#include "../../src/disassembler.h"
 
 #define CATCH_CONFIG_MAIN
 
