@@ -1,0 +1,3 @@
+#define NOP 0x0
+#define STC 0x37
+#define CMC 0x3f

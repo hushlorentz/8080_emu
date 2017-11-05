@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "disassembler.h"
+#include "op_codes.h"
 
 using namespace std;
 
@@ -13,13 +14,13 @@ void Disassembler::translateOpCodes(unsigned char *buffer, int bufferSize)
 
     switch (*p)
     {
-      case 0x0:
+      case NOP:
         cout << "NOP";
         break;
-      case 0x37:
+      case STC:
         cout << "STC - Set Carry";
         break;
-      case 0x3f:
+      case CMC:
         cout << "CMC - Compliment Carry";
         break;
       default:

@@ -6,8 +6,8 @@ SRC_DIR = src
 OBJ_DIR = obj
 TEST_DIR = tests
 TEST_OBJ_DIR = $(TEST_DIR)/obj
-OBJ = $(addprefix $(OBJ_DIR)/, disassembler.o io.o)
-TEST_OBJ = $(addprefix $(TEST_OBJ_DIR)/, disassembler.o io.o)
+OBJ = $(addprefix $(OBJ_DIR)/, cpu.o disassembler.o io.o unhandled_op_code_exception.o)
+TEST_OBJ = $(addprefix $(TEST_OBJ_DIR)/, cpu.o disassembler.o io.o unhandled_op_code_exception.o)
 TEST_SPECIFIC_OBJ = $(addprefix $(TEST_OBJ_DIR)/, test.o test_opcodes.o)
 
 $(EXE): $(OBJ) $(OBJ_DIR)/main.o
