@@ -11,6 +11,8 @@ class CPU
 
   private:
     char status;
+    void setStatus(char bit);
+    void flipStatusBit(char bit);
 };
 
 #endif

@@ -57,4 +57,3 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE(c.carryBit() == 0);
   }
 }
-

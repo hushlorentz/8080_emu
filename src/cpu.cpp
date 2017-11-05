@@ -25,16 +25,26 @@ void CPU::processProgram(unsigned char *program, int programSize)
       case NOP:
         break;
       case STC:
-        this->status |= CARRY_BIT;
+        this->setStatus(CARRY_BIT);
         break;
       case CMC:
-        this->status = this->carryBit() ? this->status & ~CARRY_BIT : this->status |= CARRY_BIT;
+        this->flipStatusBit(CARRY_BIT);
         break;
       default:
         throw UnhandledOpCodeException();
         break;  
     }
   }
+}
+
+void CPU::setStatus(char bit)
+{
+  this->status |= bit;
+}
+
+void CPU::flipStatusBit(char bit)
+{
+  this->status = (this->status & bit) ? this->status & ~bit : this->status |= bit;
 }
 
 bool CPU::allClear()
