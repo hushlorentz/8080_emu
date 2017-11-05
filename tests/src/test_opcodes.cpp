@@ -47,13 +47,11 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE(c.carryBit() == 1);
   }
 
-  SECTION("A program can flip the Carry Bit twice")
+  SECTION("A program can reset the Carry Bit by flipping it twice")
   {
-    unsigned char program[1] = {CMC};
+    unsigned char program[2] = {CMC, CMC};
 
-    c.processProgram(program, 1);
-    REQUIRE(c.carryBit() == 1);
-    c.processProgram(program, 1);
+    c.processProgram(program, 2);
     REQUIRE(c.carryBit() == 0);
   }
 }
