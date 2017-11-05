@@ -9,6 +9,11 @@ using namespace Catch;
 TEST_CASE("The CPU handles all the OpCodes correctly") {
   CPU c = CPU();
    
+  SECTION("A new CPU instance is all clear")
+  {
+    REQUIRE(c.allClear());
+  }
+
   SECTION("An unhandled OpCode throws an exception")
   {
     unsigned char program[1] = {0xFF};
@@ -22,11 +27,6 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
 
     c.processProgram(program, 1);
 
-    REQUIRE(c.allClear());
-  }
-
-  SECTION("A new CPU instance is all clear")
-  {
     REQUIRE(c.allClear());
   }
 
