@@ -8,6 +8,7 @@ TEST_DIR = tests
 TEST_OBJ_DIR = $(TEST_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, disassembler.o io.o)
 TEST_OBJ = $(addprefix $(TEST_OBJ_DIR)/, disassembler.o io.o)
+TEST_SPECIFIC_OBJ = $(addprefix $(TEST_OBJ_DIR)/, test.o test_opcodes.o)
 
 $(EXE): $(OBJ) $(OBJ_DIR)/main.o
 	$(CC) $(CFLAGS) $^ -o $@
@@ -19,7 +20,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TEST_EXE): $(TEST_OBJ) $(TEST_OBJ_DIR)/test.o
+$(TEST_EXE): $(TEST_OBJ) $(TEST_SPECIFIC_OBJ)
 	$(CC) $(CFLAGS) $^ -o $(TEST_EXE)
 	./$(TEST_EXE)
 
@@ -27,7 +28,8 @@ $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	@ mkdir -p $(TEST_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TEST_OBJ_DIR)/test.o: $(TEST_DIR)/src/test.cpp
+$(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/src/%.cpp
+	@ mkdir -p $(TEST_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

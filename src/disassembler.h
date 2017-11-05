@@ -1,7 +1,10 @@
 #ifndef DISASSEMBLER_H
 #define DISASSEMBLER_H
 
-void disassemble(unsigned char *buffer, int bufferSize);
-int processOpCode(unsigned char *opCodes, int programCounter);
+class Disassembler
+{
+  public:
+    static void translateOpCodes(unsigned char *buffer, int bufferSize);
+};
 
 #endif
