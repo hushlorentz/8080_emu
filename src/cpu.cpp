@@ -138,7 +138,7 @@ void CPU::incrementRegisterM()
   uint8_t sum = memory[memory_address] + 1;
 
   memory[memory_address] = sum;
-  setParityBitFrom16BitRegister(registerM());
+  setParityBitFrom8BitRegister(registerM());
 }
 
 void CPU::setParityBitFrom16BitRegister(uint16_t reg)
@@ -152,7 +152,7 @@ void CPU::decrementRegisterM()
   uint8_t sum = memory[memory_address] - 1;
 
   memory[memory_address] = sum;
-  setParityBitFrom16BitRegister(registerM());
+  setParityBitFrom8BitRegister(registerM());
 }
 
 uint8_t CPU::registerM()
