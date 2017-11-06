@@ -28,31 +28,55 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case NOP:
         break;
       case INR_B:
-        addToRegister(&(registerB), 1);
+        addToRegister(&registerB, 1);
         break;  
       case INR_C:
-        addToRegister(&(registerC), 1);
+        addToRegister(&registerC, 1);
         break;  
       case INR_D:
-        addToRegister(&(registerD), 1);
+        addToRegister(&registerD, 1);
         break;  
       case INR_E:
-        addToRegister(&(registerE), 1);
+        addToRegister(&registerE, 1);
         break;  
       case INR_H:
-        addToRegister(&(registerH), 1);
+        addToRegister(&registerH, 1);
         break;  
       case INR_L:
-        addToRegister(&(registerL), 1);
+        addToRegister(&registerL, 1);
         break;  
       case INR_A:
-        addToRegister(&(registerA), 1);
+        addToRegister(&registerA, 1);
         break;  
       case INR_M:
         addToRegisterM(1);
         break;  
       case STC:
         setStatus(CARRY_BIT);
+        break;
+      case DCR_B:
+        addToRegister(&registerB, -1);
+        break;
+      case DCR_C:
+        addToRegister(&registerC, -1);
+        break;
+      case DCR_D:
+        addToRegister(&registerD, -1);
+        break;
+      case DCR_E:
+        addToRegister(&registerE, -1);
+        break;
+      case DCR_H:
+        addToRegister(&registerH, -1);
+        break;
+      case DCR_L:
+        addToRegister(&registerL, -1);
+        break;
+      case DCR_A:
+        addToRegister(&registerA, -1);
+        break;
+      case DCR_M:
+        addToRegisterM(-1);
         break;
       case CMC:
         flipStatusBit(CARRY_BIT);

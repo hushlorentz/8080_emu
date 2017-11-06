@@ -55,67 +55,18 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE(!cpu.carryBitSet());
   }
 
-  SECTION("A program can increment register A")
+  SECTION("A program can increment the registers")
   {
-    uint8_t program[1] = {INR_A};
+    uint8_t program[8] = {INR_A, INR_B, INR_C, INR_D, INR_E, INR_H, INR_L, INR_M};
 
-    cpu.processProgram(program, 1);
+    cpu.processProgram(program, 8);
     REQUIRE(cpu.registerA == 1);
-  }
-
-  SECTION("A program can increment register B")
-  {
-    uint8_t program[1] = {INR_B};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerB == 1);
-  }
-
-  SECTION("A program can increment register C")
-  {
-    uint8_t program[1] = {INR_C};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerC == 1);
-  }
-
-  SECTION("A program can increment register D")
-  {
-    uint8_t program[1] = {INR_D};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerD == 1);
-  }
-
-  SECTION("A program can increment register E")
-  {
-    uint8_t program[1] = {INR_E};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerE == 1);
-  }
-
-  SECTION("A program can increment register H")
-  {
-    uint8_t program[1] = {INR_H};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerH == 1);
-  }
-
-  SECTION("A program can increment register L")
-  {
-    uint8_t program[1] = {INR_L};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerL == 1);
-  }
-
-  SECTION("A program can increment register M (H+L)")
-  {
-    uint8_t program[1] = {INR_M};
-
-    cpu.processProgram(program, 1);
     REQUIRE(cpu.registerM() == 1);
   }
 
@@ -149,5 +100,20 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
 
     cpu.processProgram(program, 3);
     REQUIRE(cpu.parityBitSet());
+  }
+
+  SECTION("A program can decrement all registers")
+  {
+    uint8_t program[8] = {DCR_A, DCR_B, DCR_C, DCR_D, DCR_E, DCR_H, DCR_L, DCR_M};
+
+    cpu.processProgram(program, 8);
+    REQUIRE((int8_t)cpu.registerA == -1);
+    REQUIRE((int8_t)cpu.registerB == -1);
+    REQUIRE((int8_t)cpu.registerC == -1);
+    REQUIRE((int8_t)cpu.registerD == -1);
+    REQUIRE((int8_t)cpu.registerE == -1);
+    REQUIRE((int8_t)cpu.registerH == -1);
+    REQUIRE((int8_t)cpu.registerL == -1);
+    REQUIRE((int8_t)cpu.registerM() == -1);
   }
 }
