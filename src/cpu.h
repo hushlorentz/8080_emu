@@ -36,6 +36,7 @@ class CPU
     uint16_t currentMemoryAddress();
     void setParityBitFrom8BitRegister(uint8_t reg);
     void setParityBitFrom16BitRegister(uint16_t reg);
+    void complimentAccumulator();
 };
 
 #endif

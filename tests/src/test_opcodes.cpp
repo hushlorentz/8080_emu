@@ -116,4 +116,12 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE((int8_t)cpu.registerL == -1);
     REQUIRE((int8_t)cpu.registerM() == -1);
   }
+
+  SECTION("A program can set the accumulator to its compliment")
+  {
+    uint8_t program[1] = {CMA};
+
+    cpu.processProgram(program, 1);
+    REQUIRE((int8_t)cpu.registerA == -1);
+  }
 }

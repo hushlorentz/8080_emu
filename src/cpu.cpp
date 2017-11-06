@@ -81,6 +81,9 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CMC:
         flipStatusBit(CARRY_BIT);
         break;
+      case CMA:
+        complimentAccumulator();
+        break;
       default:
         throw UnhandledOpCodeException();
         break;  
@@ -150,4 +153,9 @@ uint16_t CPU::currentMemoryAddress()
 bool CPU::parityBitSet()
 {
   return hasFlag(status, PARITY_BIT);
+}
+
+void CPU::complimentAccumulator()
+{
+  registerA = ~registerA;
 }

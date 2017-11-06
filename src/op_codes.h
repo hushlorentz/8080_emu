@@ -11,6 +11,7 @@
 #define DCR_H 0x25
 #define INR_L 0x2C
 #define DCR_L 0x2D
+#define CMA 0x2F
 #define INR_M 0x34
 #define DCR_M 0x35
 #define INR_A 0x3C
