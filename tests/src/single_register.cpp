@@ -149,6 +149,16 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE(!cpu.signBitSet());
   }
 
+  SECTION("Incrementing a register containing 14 does not set the auxiliary carry flag")
+  {
+    cpu.registerD = 14;
+
+    uint8_t program[1] = {INR_D};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(!cpu.auxiliaryCarryBitSet());
+  }
+
   SECTION("Incrementing a register containing 15 sets the auxiliary carry flag")
   {
     cpu.registerD = 15;
@@ -157,6 +167,16 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
 
     cpu.processProgram(program, 1);
     REQUIRE(cpu.auxiliaryCarryBitSet());
+  }
+
+  SECTION("Incrementing register M containing 17 does not set the auxiliary carry flag")
+  {
+    cpu.memory[0] = 17;
+
+    uint8_t program[1] = {INR_M};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(!cpu.auxiliaryCarryBitSet());
   }
 
   SECTION("Incrementing register M containing 15 sets the auxiliary carry flag")
