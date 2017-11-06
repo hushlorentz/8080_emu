@@ -7,51 +7,147 @@
 using namespace Catch;
 
 TEST_CASE("The CPU handles all the OpCodes correctly") {
-  CPU c = CPU();
+  CPU cpu = CPU();
    
-  SECTION("A new CPU instance is all clear")
+  SECTION("The CPU starts in a cleared state")
   {
-    REQUIRE(c.allClear());
+    REQUIRE(cpu.allClear());
   }
 
   SECTION("An unhandled OpCode throws an exception")
   {
-    unsigned char program[1] = {0xFF};
+    uint8_t program[1] = {0xFF};
 
-    REQUIRE_THROWS_WITH(c.processProgram(program, 1), Contains("Unhandled Op Code!"));
+    REQUIRE_THROWS_WITH(cpu.processProgram(program, 1), Contains("Unhandled Op Code!"));
   }
 
   SECTION("A program with only NOP, doesn't change the state of the CPU")
   {
-    unsigned char program[1] = {NOP};
+    uint8_t program[1] = {NOP};
 
-    c.processProgram(program, 1);
+    cpu.processProgram(program, 1);
 
-    REQUIRE(c.allClear());
+    REQUIRE(cpu.allClear());
   }
 
   SECTION("A program can set the Carry Bit")
   {
-    unsigned char program[1] = {STC};
+    uint8_t program[1] = {STC};
 
-    c.processProgram(program, 1);
+    cpu.processProgram(program, 1);
 
-    REQUIRE(c.carryBit() == 1);
+    REQUIRE(cpu.carryBitSet());
   }
 
   SECTION("A program can flip the Carry Bit")
   {
-    unsigned char program[1] = {CMC};
+    uint8_t program[1] = {CMC};
 
-    c.processProgram(program, 1);
-    REQUIRE(c.carryBit() == 1);
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.carryBitSet());
   }
 
   SECTION("A program can reset the Carry Bit by flipping it twice")
   {
-    unsigned char program[2] = {CMC, CMC};
+    uint8_t program[2] = {CMC, CMC};
 
-    c.processProgram(program, 2);
-    REQUIRE(c.carryBit() == 0);
+    cpu.processProgram(program, 2);
+    REQUIRE(!cpu.carryBitSet());
+  }
+
+  SECTION("A program can increment register A")
+  {
+    uint8_t program[1] = {INR_A};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 1);
+  }
+
+  SECTION("A program can increment register B")
+  {
+    uint8_t program[1] = {INR_B};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerB == 1);
+  }
+
+  SECTION("A program can increment register C")
+  {
+    uint8_t program[1] = {INR_C};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerC == 1);
+  }
+
+  SECTION("A program can increment register D")
+  {
+    uint8_t program[1] = {INR_D};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerD == 1);
+  }
+
+  SECTION("A program can increment register E")
+  {
+    uint8_t program[1] = {INR_E};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerE == 1);
+  }
+
+  SECTION("A program can increment register H")
+  {
+    uint8_t program[1] = {INR_H};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerH == 1);
+  }
+
+  SECTION("A program can increment register L")
+  {
+    uint8_t program[1] = {INR_L};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerL == 1);
+  }
+
+  SECTION("A program can increment register M (H+L)")
+  {
+    uint8_t program[1] = {INR_M};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerM() == 1);
+  }
+
+  SECTION("Incrementing an 8-bit register once does not set the parity flag")
+  {
+    uint8_t program[1] = {INR_B};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(!cpu.parityBitSet());
+  }
+
+  SECTION("Incrementing an 8-bit register three times sets the parity flag")
+  {
+    uint8_t program[3] = {INR_B, INR_B, INR_B};
+
+    cpu.processProgram(program, 3);
+    REQUIRE(cpu.parityBitSet());
+  }
+
+  SECTION("Incrementing a 16-bit register once does not set the parity flag")
+  {
+    uint8_t program[1] = {INR_M};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(!cpu.parityBitSet());
+  }
+
+  SECTION("Incrementing a 16-bit register three times sets the parity flag")
+  {
+    uint8_t program[3] = {INR_M, INR_M, INR_M};
+
+    cpu.processProgram(program, 3);
+    REQUIRE(cpu.parityBitSet());
   }
 }

@@ -1,3 +1,11 @@
 #define NOP 0x0
+#define INR_B 0x04
+#define INR_C 0x0C
+#define INR_D 0x14
+#define INR_E 0x1C
+#define INR_H 0x24
+#define INR_L 0x2C
+#define INR_M 0x34
+#define INR_A 0x3C
 #define STC 0x37
 #define CMC 0x3f

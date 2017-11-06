@@ -1,7 +1,7 @@
 EXE = emu
 TEST_EXE = run_tests
 CC = g++
-CFLAGS = -Wall -std=c++11
+CFLAGS = -Wall -std=c++11 -g
 SRC_DIR = src
 OBJ_DIR = obj
 TEST_DIR = tests
