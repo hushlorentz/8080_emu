@@ -2,6 +2,11 @@
 #define CPU_H
 
 #include <cstdint>
+#include <vector>
+
+const int MAX_MEMORY = 65536;
+
+using namespace std;
 
 class CPU
 {
@@ -18,7 +23,8 @@ class CPU
     uint8_t registerE;
     uint8_t registerH;
     uint8_t registerL;
-    uint16_t registerM();
+    uint8_t registerM();
+    vector<uint8_t> memory;
 
   private:
     uint8_t status;
@@ -27,6 +33,7 @@ class CPU
     void flipStatusBit(uint8_t bit);
     void addToRegister(uint8_t *reg, uint8_t operand);
     void addToRegisterM(uint16_t operand);
+    uint16_t currentMemoryAddress();
     void setParityBitFrom8BitRegister(uint8_t reg);
     void setParityBitFrom16BitRegister(uint16_t reg);
 };

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "bit_ops.h"
 #include "cpu.h"
@@ -10,11 +11,12 @@ using namespace std;
 
 CPU::CPU() : registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0), status(0)
 {
+  memory.resize(MAX_MEMORY);
 }
 
 bool CPU::carryBitSet()
 {
-  return hasFlag(this->status, CARRY_BIT);
+  return hasFlag(status, CARRY_BIT);
 }
 
 void CPU::processProgram(uint8_t *program, uint16_t programSize)
@@ -26,34 +28,34 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case NOP:
         break;
       case INR_B:
-        this->addToRegister(&(this->registerB), 1);
+        addToRegister(&(registerB), 1);
         break;  
       case INR_C:
-        this->addToRegister(&(this->registerC), 1);
+        addToRegister(&(registerC), 1);
         break;  
       case INR_D:
-        this->addToRegister(&(this->registerD), 1);
+        addToRegister(&(registerD), 1);
         break;  
       case INR_E:
-        this->addToRegister(&(this->registerE), 1);
+        addToRegister(&(registerE), 1);
         break;  
       case INR_H:
-        this->addToRegister(&(this->registerH), 1);
+        addToRegister(&(registerH), 1);
         break;  
       case INR_L:
-        this->addToRegister(&(this->registerL), 1);
+        addToRegister(&(registerL), 1);
         break;  
       case INR_A:
-        this->addToRegister(&(this->registerA), 1);
+        addToRegister(&(registerA), 1);
         break;  
       case INR_M:
-        this->addToRegisterM(1);
+        addToRegisterM(1);
         break;  
       case STC:
-        this->setStatus(CARRY_BIT);
+        setStatus(CARRY_BIT);
         break;
       case CMC:
-        this->flipStatusBit(CARRY_BIT);
+        flipStatusBit(CARRY_BIT);
         break;
       default:
         throw UnhandledOpCodeException();
@@ -64,30 +66,30 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
 
 void CPU::setStatus(uint8_t bit)
 {
-  setFlag(&(this->status), bit);
+  setFlag(&(status), bit);
 }
 
 void CPU::clearStatus(uint8_t bit)
 {
-  clearFlag(&(this->status), bit);
+  clearFlag(&(status), bit);
 }
 
 void CPU::flipStatusBit(uint8_t bit)
 {
-  this->status = (this->status & bit) ? this->status & ~bit : this->status |= bit;
+  status = (status & bit) ? status & ~bit : status |= bit;
 }
 
 bool CPU::allClear()
 {
-  return this->status == 0 && this->registerB == 0 && this->registerC == 0 &&
-    this->registerD == 0 && this->registerE == 0 && this->registerH == 0 &&
-    this->registerL == 0 && this->registerA == 0;
+  return status == 0 && registerB == 0 && registerC == 0 &&
+    registerD == 0 && registerE == 0 && registerH == 0 &&
+    registerL == 0 && registerA == 0;
 }
 
 void CPU::addToRegister(uint8_t *reg, uint8_t operand)
 {
   *reg += operand;
-  this->setParityBitFrom8BitRegister(*reg);
+  setParityBitFrom8BitRegister(*reg);
 }
 
 void CPU::setParityBitFrom8BitRegister(uint8_t reg)
@@ -99,26 +101,29 @@ void CPU::setParityBitFrom8BitRegister(uint8_t reg)
 
 void CPU::setParityBitFrom16BitRegister(uint16_t reg)
 {
-  this->setParityBitFrom8BitRegister(reg ^ reg >> 8);
+  setParityBitFrom8BitRegister(reg ^ reg >> 8);
 }
 
 void CPU::addToRegisterM(uint16_t operand)
 {
-  uint16_t HL = this->registerH << 8 | this->registerL;
-  HL += operand;
+  uint16_t memory_address = currentMemoryAddress();
+  uint8_t sum = memory[memory_address] + operand;
 
-  this->registerH = HL >> 8 & 0xFF;
-  this->registerL = HL & 0xFF;
-  this->setParityBitFrom16BitRegister(this->registerM());
+  memory[memory_address] = sum;
+  setParityBitFrom16BitRegister(registerM());
 }
 
-uint16_t CPU::registerM()
+uint8_t CPU::registerM()
 {
-  uint16_t regH = this->registerH;
-  return regH << 8 | this->registerL;
+  return memory[currentMemoryAddress()];
+}
+
+uint16_t CPU::currentMemoryAddress()
+{
+  return registerH << 8 | registerL;
 }
 
 bool CPU::parityBitSet()
 {
-  return hasFlag(this->status, PARITY_BIT);
+  return hasFlag(status, PARITY_BIT);
 }

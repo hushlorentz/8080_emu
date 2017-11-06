@@ -20,8 +20,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TEST_EXE): $(TEST_OBJ) $(TEST_SPECIFIC_OBJ)
+build_tests: $(TEST_OBJ) $(TEST_SPECIFIC_OBJ)
 	$(CC) $(CFLAGS) $^ -o $(TEST_EXE)
+
+$(TEST_EXE): build_tests
 	./$(TEST_EXE)
 
 $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
