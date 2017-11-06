@@ -31,8 +31,10 @@ class CPU
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);
     void flipStatusBit(uint8_t bit);
-    void addToRegister(uint8_t *reg, uint8_t operand);
-    void addToRegisterM(uint16_t operand);
+    void incrementRegister(uint8_t *reg);
+    void incrementRegisterM();
+    void decrementRegister(uint8_t *reg);
+    void decrementRegisterM();
     uint16_t currentMemoryAddress();
     void setParityBitFrom8BitRegister(uint8_t reg);
     void setParityBitFrom16BitRegister(uint16_t reg);
