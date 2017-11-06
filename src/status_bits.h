@@ -1,2 +1,7 @@
 #define CARRY_BIT 1
 #define PARITY_BIT 4
+#define AUXILIARY_CARRY_BIT 16
+#define ZERO_BIT 64
+#define SIGN_BIT 128
+
+#define AUXILIARY_CARRY_SHIFT 3

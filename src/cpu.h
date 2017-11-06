@@ -14,6 +14,9 @@ class CPU
     CPU();
     bool carryBitSet();
     bool parityBitSet();
+    bool signBitSet();
+    bool zeroBitSet();
+    bool auxiliaryCarryBitSet();
     bool allClear();
     void processProgram(uint8_t *program, uint16_t programSize);
     uint8_t registerA;
@@ -38,6 +41,9 @@ class CPU
     uint16_t currentMemoryAddress();
     void setStatusFromRegister(uint8_t reg);
     void setParityBitFromRegister(uint8_t reg);
+    void setZeroBitFromRegister(uint8_t reg);
+    void setSignBitFromRegister(uint8_t reg);
+    void setAuxiliaryCarryBitFromRegister(uint8_t reg, uint8_t operand);
     void complimentAccumulator();
 };
 

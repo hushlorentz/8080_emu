@@ -117,6 +117,58 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
     REQUIRE((int8_t)cpu.registerM() == -1);
   }
 
+  SECTION("Decrementing a register and then incrementing it sets the zero flag")
+  {
+    uint8_t program[2] = {DCR_B, INR_B};
+
+    cpu.processProgram(program, 2);
+    REQUIRE(cpu.zeroBitSet());
+  }
+
+  SECTION("Incrementing register M and then decrementing it sets the zero flag")
+  {
+    uint8_t program[2] = {INR_M, DCR_M};
+
+    cpu.processProgram(program, 2);
+    REQUIRE(cpu.zeroBitSet());
+  }
+
+  SECTION("Decrementing a register passed 0 sets the sign flag")
+  {
+    uint8_t program[1] = {DCR_B};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.signBitSet());
+  }
+
+  SECTION("Decrementing a register passed 0 and then incrementing resets the sign flag")
+  {
+    uint8_t program[2] = {DCR_B, INR_B};
+
+    cpu.processProgram(program, 2);
+    REQUIRE(!cpu.signBitSet());
+  }
+
+  SECTION("Incrementing a register containing 15 sets the auxiliary carry flag")
+  {
+    cpu.registerD = 15;
+
+    uint8_t program[1] = {INR_D};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.auxiliaryCarryBitSet());
+  }
+
+  SECTION("Incrementing register M containing 15 sets the auxiliary carry flag")
+  {
+    cpu.memory[0] = 15;
+
+    uint8_t program[1] = {INR_M};
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.auxiliaryCarryBitSet());
+  }
+
   SECTION("A program can set the accumulator to its compliment")
   {
     uint8_t program[1] = {CMA};
