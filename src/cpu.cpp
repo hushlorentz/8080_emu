@@ -116,10 +116,15 @@ bool CPU::allClear()
 void CPU::incrementRegister(uint8_t *reg)
 {
   (*reg)++; 
-  setParityBitFrom8BitRegister(*reg);
+  setStatusFromRegister(*reg);
 }
 
-void CPU::setParityBitFrom8BitRegister(uint8_t reg)
+void CPU::setStatusFromRegister(uint8_t reg)
+{
+  setParityBitFromRegister(reg);
+}
+
+void CPU::setParityBitFromRegister(uint8_t reg)
 {
   reg ^= reg >> 4;
   reg &= 0xf;
@@ -129,7 +134,7 @@ void CPU::setParityBitFrom8BitRegister(uint8_t reg)
 void CPU::decrementRegister(uint8_t *reg)
 {
   (*reg)--;
-  setParityBitFrom8BitRegister(*reg);
+  setParityBitFromRegister(*reg);
 }
 
 void CPU::incrementRegisterM()
@@ -138,12 +143,7 @@ void CPU::incrementRegisterM()
   uint8_t sum = memory[memory_address] + 1;
 
   memory[memory_address] = sum;
-  setParityBitFrom8BitRegister(registerM());
-}
-
-void CPU::setParityBitFrom16BitRegister(uint16_t reg)
-{
-  setParityBitFrom8BitRegister(reg ^ reg >> 8);
+  setParityBitFromRegister(registerM());
 }
 
 void CPU::decrementRegisterM()
@@ -152,7 +152,7 @@ void CPU::decrementRegisterM()
   uint8_t sum = memory[memory_address] - 1;
 
   memory[memory_address] = sum;
-  setParityBitFrom8BitRegister(registerM());
+  setParityBitFromRegister(registerM());
 }
 
 uint8_t CPU::registerM()

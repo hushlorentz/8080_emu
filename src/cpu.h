@@ -36,8 +36,8 @@ class CPU
     void decrementRegister(uint8_t *reg);
     void decrementRegisterM();
     uint16_t currentMemoryAddress();
-    void setParityBitFrom8BitRegister(uint8_t reg);
-    void setParityBitFrom16BitRegister(uint16_t reg);
+    void setStatusFromRegister(uint8_t reg);
+    void setParityBitFromRegister(uint8_t reg);
     void complimentAccumulator();
 };
 
