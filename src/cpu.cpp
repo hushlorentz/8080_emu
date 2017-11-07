@@ -63,6 +63,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
     {
       case MOV_B_B:
       case MOV_C_C:
+      case MOV_D_D:
       case MOV_M_M:
       case NOP:
         break;
@@ -141,6 +142,12 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_C_M:
       case MOV_C_A:
       case MOV_D_B:
+      case MOV_D_C:
+      case MOV_D_E:
+      case MOV_D_H:
+      case MOV_D_L:
+      case MOV_D_M:
+      case MOV_D_A:
       case MOV_E_B:
       case MOV_H_B:
       case MOV_L_B:
