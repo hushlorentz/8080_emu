@@ -28,6 +28,13 @@
 #define MOV_B_M 0x46
 #define MOV_B_A 0x47
 #define MOV_C_B 0x48
+#define MOV_C_C 0x49
+#define MOV_C_D 0x4a
+#define MOV_C_E 0x4b
+#define MOV_C_H 0x4c
+#define MOV_C_L 0x4d
+#define MOV_C_M 0x4e
+#define MOV_C_A 0x4f
 #define MOV_D_B 0x50
 #define MOV_E_B 0x58
 #define MOV_E_M 0x5e

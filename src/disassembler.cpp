@@ -104,6 +104,27 @@ void Disassembler::translateOpCodes(unsigned char *buffer, int bufferSize)
       case MOV_C_B:
         cout << "MOV_C_B - move register B to register C";
         break;
+      case MOV_C_C:
+        cout << "MOV_C_C - move register C to register C";
+        break;
+      case MOV_C_D:
+        cout << "MOV_C_D - move register D to register C";
+        break;
+      case MOV_C_E:
+        cout << "MOV_C_E - move register E to register C";
+        break;
+      case MOV_C_H:
+        cout << "MOV_C_H - move register H to register C";
+        break;
+      case MOV_C_L:
+        cout << "MOV_C_L - move register L to register C";
+        break;
+      case MOV_C_M:
+        cout << "MOV_C_M - move register M to register C";
+        break;
+      case MOV_C_A:
+        cout << "MOV_C_A - move register A to register C";
+        break;
       case MOV_D_B:
         cout << "MOV_D_B - move register B to register D";
         break;

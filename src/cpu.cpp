@@ -61,6 +61,9 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
   {
     switch (*pc)
     {
+      case MOV_B_B:
+      case MOV_C_C:
+      case MOV_M_M:
       case NOP:
         break;
       case INR_B:
@@ -123,7 +126,6 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case DAA:
         decimalAdjustAccumulator();  
         break;
-      case MOV_B_B:
       case MOV_B_C:
       case MOV_B_D:
       case MOV_B_E:
@@ -132,6 +134,12 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_B_M:
       case MOV_B_A:
       case MOV_C_B:
+      case MOV_C_D:
+      case MOV_C_E:
+      case MOV_C_H:
+      case MOV_C_L:
+      case MOV_C_M:
+      case MOV_C_A:
       case MOV_D_B:
       case MOV_E_B:
       case MOV_H_B:
@@ -140,7 +148,6 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_E_M:
       case MOV_M_B:
       case MOV_M_A:
-      case MOV_M_M:
         moveRegisterToRegister(*pc);
         break;  
       default:
