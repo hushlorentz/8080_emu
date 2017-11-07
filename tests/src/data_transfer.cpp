@@ -77,10 +77,46 @@ TEST_CASE("The CPU handles data transfer correctly")
     REQUIRE(checkRegisterTransferFromM(&cpu, program, &cpu.registerB));
   }
 
+  SECTION("A program can transfer register A to register B")
+  {
+    uint8_t program[1] = { MOV_B_A };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerA, &cpu.registerB));
+  }
+
   SECTION("A program can transfer register B to register C")
   {
     uint8_t program[1] = { MOV_C_B };
     REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerC));
+  }
+
+  SECTION("A program can transfer register B to register D")
+  {
+    uint8_t program[1] = { MOV_D_B };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerD));
+  }
+
+  SECTION("A program can transfer register B to register E")
+  {
+    uint8_t program[1] = { MOV_E_B };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerE));
+  }
+
+  SECTION("A program can transfer register B to register H")
+  {
+    uint8_t program[1] = { MOV_H_B };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerH));
+  }
+
+  SECTION("A program can transfer register B to register L")
+  {
+    uint8_t program[1] = { MOV_L_B };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerL));
+  }
+
+  SECTION("A program can transfer register B to register A")
+  {
+    uint8_t program[1] = { MOV_A_B };
+    REQUIRE(checkRegisterTransfer(&cpu, program, &cpu.registerB, &cpu.registerA));
   }
 
   SECTION("A program can transfer register B to register M")

@@ -130,7 +130,13 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_B_H:
       case MOV_B_L:
       case MOV_B_M:
+      case MOV_B_A:
       case MOV_C_B:
+      case MOV_D_B:
+      case MOV_E_B:
+      case MOV_H_B:
+      case MOV_L_B:
+      case MOV_A_B:
       case MOV_E_M:
       case MOV_M_B:
       case MOV_M_A:
