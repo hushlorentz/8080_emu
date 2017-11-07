@@ -6,7 +6,8 @@
 
 using namespace Catch;
 
-TEST_CASE("The CPU handles all the OpCodes correctly") {
+TEST_CASE("The CPU handles all the OpCodes correctly") 
+{
   CPU cpu = CPU();
    
   SECTION("The CPU starts in a cleared state")
@@ -195,5 +196,56 @@ TEST_CASE("The CPU handles all the OpCodes correctly") {
 
     cpu.processProgram(program, 1);
     REQUIRE((int8_t)cpu.registerA == -1);
+  }
+
+  SECTION("If the accumulator holds 0, DAA will not change its value")
+  {
+    uint8_t program[1] = {DAA};
+    cpu.registerA = 0;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0);
+  }
+
+  SECTION("If the accumulator holds 0xA, it will hold 0x10 after a DAA op code and the auxiliary flag will be set")
+  {
+    uint8_t program[1] = {DAA};
+    cpu.registerA = 10;
+    REQUIRE(cpu.registerA == 10);
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 16);
+    REQUIRE(cpu.auxiliaryCarryBitSet());
+    REQUIRE(!cpu.carryBitSet());
+  }
+
+  SECTION("If the accumulator holds 0x9A and a program calls the DAA Op Code, the accumulator will hold 1 and the Auxiliary Carry and Carry flags will be set.")
+  {
+    uint8_t program[1] = {DAA};
+    cpu.registerA = 0x9B;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 1);
+    REQUIRE(cpu.carryBitSet());
+    REQUIRE(cpu.auxiliaryCarryBitSet());
+  }
+
+  SECTION("If the accumulator holds 0, and the program sets the carry bit and does a DAA, the accumulator will hold 0xA0 and the carry flag will be unset.")
+  {
+    uint8_t program[2] = {STC, DAA};
+
+    cpu.processProgram(program, 2);
+    REQUIRE(cpu.registerA == 0x60);
+    REQUIRE(!cpu.carryBitSet());
+  }
+
+  SECTION("If the accumulator holds 0XF and a program does a INR_A and DAA, the accumulator will hold 0x06 and the auxiliary carry flag will be unset.")
+  {
+    uint8_t program[2] = {INR_A, DAA};
+    cpu.registerA = 0xF;
+
+    cpu.processProgram(program, 2);
+    REQUIRE(cpu.registerA == 0x16);
+    REQUIRE(!cpu.auxiliaryCarryBitSet());
   }
 }

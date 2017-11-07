@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include <cstdint>
+#include <map>
 #include <vector>
 
 const int MAX_MEMORY = 65536;
@@ -28,6 +29,7 @@ class CPU
     uint8_t registerL;
     uint8_t registerM();
     vector<uint8_t> memory;
+    map<uint8_t, uint8_t *> registerMap;
 
   private:
     uint8_t status;
@@ -43,8 +45,13 @@ class CPU
     void setParityBitFromRegister(uint8_t reg);
     void setZeroBitFromRegister(uint8_t reg);
     void setSignBitFromRegister(uint8_t reg);
-    void setAuxiliaryCarryBitFromRegister(uint8_t reg, uint8_t operand);
+    bool checkAuxiliaryCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand);
+    bool checkCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand);
+    void setAuxiliaryCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand);
+    void setCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand);
     void complimentAccumulator();
+    void decimalAdjustAccumulator();
+    void moveRegisterToRegister(uint8_t opCode);
 };
 
 #endif

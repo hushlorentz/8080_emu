@@ -5,3 +5,4 @@
 #define SIGN_BIT 128
 
 #define AUXILIARY_CARRY_SHIFT 3
+#define CARRY_SHIFT 7

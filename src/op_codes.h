@@ -9,12 +9,16 @@
 #define DCR_E 0x1D
 #define INR_H 0x24
 #define DCR_H 0x25
+#define DAA 0x27
 #define INR_L 0x2C
 #define DCR_L 0x2D
 #define CMA 0x2F
 #define INR_M 0x34
 #define DCR_M 0x35
+#define STC 0x37
 #define INR_A 0x3C
 #define DCR_A 0x3D
-#define STC 0x37
 #define CMC 0x3f
+#define MOV_B_C 0x41
+#define MOV_E_M 0x5e
+#define MOV_M_A 0x77

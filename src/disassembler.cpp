@@ -20,21 +20,57 @@ void Disassembler::translateOpCodes(unsigned char *buffer, int bufferSize)
       case INR_B:
         cout << "INR_B - Increment register B";
         break;  
+      case DCR_B:
+        cout << "DCR_B - Decrement register B";
+        break;  
       case INR_C:
         cout << "INR_C - Increment register C";
+        break;  
+      case DCR_C:
+        cout << "DCR_C - Decrement register C";
         break;  
       case INR_D:
         cout << "INR_D - Increment register D";
         break;  
+      case DCR_D:
+        cout << "DCR_D - Decrement register D";
+        break;  
       case INR_E:
         cout << "INR_E - Increment register E";
+        break;  
+      case DCR_E:
+        cout << "DCR_E - Decrement register E";
         break;  
       case INR_H:
         cout << "INR_H - Increment register H";
         break;  
+      case DCR_H:
+        cout << "DCR_H - Decrement register H";
+        break;  
+      case DAA:
+        cout << "DAA - Decimal Adjust Accumulator";
+        break;  
       case INR_L:
         cout << "INR_L - Increment register L";
         break;  
+      case DCR_L:
+        cout << "DCR_L - Decrement register L";
+        break;
+      case CMA:
+        cout << "CMA - Complement accumulator";
+        break;
+      case INR_M:
+        cout << "INR_M - Increment register M";
+        break;  
+      case DCR_M:
+        cout << "DCR_M - Decrement register M";
+        break;
+      case INR_A:
+        cout << "INR_A - Increment register A";
+        break;  
+      case DCR_A:
+        cout << "DCR_A - Decrement register A";
+        break;
       case STC:
         cout << "STC - Set Carry";
         break;
