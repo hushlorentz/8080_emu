@@ -19,6 +19,13 @@
 #define INR_A 0x3C
 #define DCR_A 0x3D
 #define CMC 0x3f
+#define MOV_B_B 0x40
 #define MOV_B_C 0x41
+#define MOV_B_D 0x42
+#define MOV_B_E 0x43
+#define MOV_B_H 0x44
+#define MOV_B_L 0x45
+#define MOV_B_M 0x46
 #define MOV_E_M 0x5e
 #define MOV_M_A 0x77
+#define MOV_M_M 0x76

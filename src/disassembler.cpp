@@ -77,6 +77,33 @@ void Disassembler::translateOpCodes(unsigned char *buffer, int bufferSize)
       case CMC:
         cout << "CMC - Compliment Carry";
         break;
+      case MOV_B_B:
+        cout << "MOV_B_B - move register B to register B";
+        break;
+      case MOV_B_C:
+        cout << "MOV_B_C - move register C to register B";
+        break;
+      case MOV_B_D:
+        cout << "MOV_B_D - move register D to register B";
+        break;
+      case MOV_B_E:
+        cout << "MOV_B_E - move register E to register B";
+        break;
+      case MOV_B_H:
+        cout << "MOV_B_H - move register H to register B";
+        break;
+      case MOV_B_L:
+        cout << "MOV_B_L - move register L to register B";
+        break;
+      case MOV_E_M:
+        cout << "MOV_E_M - move register M to register E";
+        break;
+      case MOV_M_A:
+        cout << "MOV_M_A - move register A to register M";
+        break;
+      case MOV_M_M:
+        cout << "MOV_M_M - move register M to itself";
+        break;
       default:
         cout << "Unsupported OpCode";
         break;

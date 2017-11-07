@@ -123,9 +123,16 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case DAA:
         decimalAdjustAccumulator();  
         break;
+      case MOV_B_B:
       case MOV_B_C:
+      case MOV_B_D:
+      case MOV_B_E:
+      case MOV_B_H:
+      case MOV_B_L:
+      case MOV_B_M:
       case MOV_E_M:
       case MOV_M_A:
+      case MOV_M_M:
         moveRegisterToRegister(*pc);
         break;  
       default:
