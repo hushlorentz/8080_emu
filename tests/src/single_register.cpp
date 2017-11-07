@@ -19,7 +19,7 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {0xFF};
 
-    REQUIRE_THROWS_WITH(cpu.processProgram(program, 1), Contains("Unhandled Op Code!"));
+    REQUIRE_THROWS_WITH(cpu.processProgram(program, 1), Contains("Unhandled Op Code: 0xff"));
   }
 
   SECTION("A program with only NOP, doesn't change the state of the CPU")

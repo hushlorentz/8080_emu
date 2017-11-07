@@ -26,6 +26,8 @@
 #define MOV_B_H 0x44
 #define MOV_B_L 0x45
 #define MOV_B_M 0x46
+#define MOV_C_B 0x48
 #define MOV_E_M 0x5e
+#define MOV_M_B 0x70
 #define MOV_M_A 0x77
 #define MOV_M_M 0x76
