@@ -189,6 +189,18 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_A_M:
         moveRegisterToRegister(*pc);
         break;  
+      case LDX_B:
+        moveMemoryToAccumulator(registerB, registerC);  
+        break;
+      case LDX_D:
+        moveMemoryToAccumulator(registerD, registerE);  
+        break;
+      case STAX_B:
+        moveAccumulatorToMemory(registerB, registerC);  
+        break;
+      case STAX_D:
+        moveAccumulatorToMemory(registerD, registerE);  
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -359,4 +371,14 @@ void CPU::moveRegisterToRegister(uint8_t opCode)
   {
     *registerMap[dst] = *registerMap[src];
   }
+}
+
+void CPU::moveMemoryToAccumulator(uint8_t upperBitsAddress, uint8_t lowerBitsAddress)
+{
+  registerA = memory[upperBitsAddress << 8 | lowerBitsAddress];
+}
+
+void CPU::moveAccumulatorToMemory(uint8_t upperBitsAddress, uint8_t lowerBitsAddress)
+{
+  memory[upperBitsAddress << 8 | lowerBitsAddress] = registerA;
 }

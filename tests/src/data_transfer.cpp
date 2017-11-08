@@ -136,5 +136,53 @@ TEST_CASE("The CPU handles data transfer correctly")
 
     REQUIRE(cpu.registerM() == value);
   }
+
+  SECTION("A program can store the memory location addressed by registers BC in the accumulator")
+  {
+    uint8_t program[1] = { LDX_B };
+    uint8_t value = 0xAF;
+    cpu.registerB = 0x0A;
+    cpu.registerC = 0xF0;
+    cpu.memory[0x0AF0] = value;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == value);
+  }
+
+  SECTION("A program can store the memory location addressed by registers DE in the accumulator")
+  {
+    uint8_t program[1] = { LDX_D };
+    uint8_t value = 0xAF;
+    cpu.registerD = 0xA0;
+    cpu.registerE = 0x0F;
+    cpu.memory[0xA00F] = value;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == value);
+  }
+
+  SECTION("A program can store the accumulator in the memory location addressed by registers BC")
+  {
+    uint8_t program[1] = { STAX_B };
+    uint8_t value = 0xAF;
+    cpu.registerB = 0x0C;
+    cpu.registerC = 0x55;
+    cpu.registerA = value;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.memory[0x0C55] == value);
+  }
+
+  SECTION("A program can store the accumulator in the memory location addressed by registers DE")
+  {
+    uint8_t program[1] = { STAX_D };
+    uint8_t value = 0xAF;
+    cpu.registerD = 0xB1;
+    cpu.registerE = 0x49;
+    cpu.registerA = value;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.memory[0xB149] == value);
+  }
 }
 

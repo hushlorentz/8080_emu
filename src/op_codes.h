@@ -1,10 +1,14 @@
 #define NOP 0x0
+#define STAX_B 0x02
 #define INR_B 0x04
 #define DCR_B 0x05
+#define LDX_B 0xa
 #define INR_C 0x0c
 #define DCR_C 0x0d
+#define STAX_D 0x12
 #define INR_D 0x14
 #define DCR_D 0x15
+#define LDX_D 0x1a
 #define INR_E 0x1c
 #define DCR_E 0x1d
 #define INR_H 0x24
