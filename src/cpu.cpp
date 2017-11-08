@@ -64,7 +64,11 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_B_B:
       case MOV_C_C:
       case MOV_D_D:
+      case MOV_E_E:
+      case MOV_H_H:
+      case MOV_L_L:
       case MOV_M_M:
+      case MOV_A_A:
       case NOP:
         break;
       case INR_B:
@@ -149,12 +153,40 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_D_M:
       case MOV_D_A:
       case MOV_E_B:
-      case MOV_H_B:
-      case MOV_L_B:
-      case MOV_A_B:
+      case MOV_E_C:
+      case MOV_E_D:
+      case MOV_E_H:
+      case MOV_E_L:
       case MOV_E_M:
+      case MOV_E_A:
+      case MOV_H_B:
+      case MOV_H_C:
+      case MOV_H_D:
+      case MOV_H_E:
+      case MOV_H_L:
+      case MOV_H_M:
+      case MOV_H_A:
+      case MOV_L_B:
+      case MOV_L_C:
+      case MOV_L_D:
+      case MOV_L_E:
+      case MOV_L_H:
+      case MOV_L_M:
+      case MOV_L_A:
       case MOV_M_B:
+      case MOV_M_C:
+      case MOV_M_D:
+      case MOV_M_E:
+      case MOV_M_H:
+      case MOV_M_L:
       case MOV_M_A:
+      case MOV_A_B:
+      case MOV_A_C:
+      case MOV_A_D:
+      case MOV_A_E:
+      case MOV_A_H:
+      case MOV_A_L:
+      case MOV_A_M:
         moveRegisterToRegister(*pc);
         break;  
       default:

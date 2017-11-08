@@ -152,26 +152,122 @@ void Disassembler::translateOpCodes(unsigned char *buffer, int bufferSize)
       case MOV_E_B:
         cout << "MOV_E_B - move register B to register E";
         break;
-      case MOV_H_B:
-        cout << "MOV_H_B - move register B to register H";
+      case MOV_E_C:
+        cout << "MOV_E_C - move register C to register E";
         break;
-      case MOV_L_B:
-        cout << "MOV_L_B - move register B to register L";
+      case MOV_E_D:
+        cout << "MOV_E_D - move register D to register E";
         break;
-      case MOV_A_B:
-        cout << "MOV_A_B - move register B to register A";
+      case MOV_E_E:
+        cout << "MOV_E_E - move register E to register E";
+        break;
+      case MOV_E_H:
+        cout << "MOV_E_H - move register H to register E";
+        break;
+      case MOV_E_L:
+        cout << "MOV_E_L - move register L to register E";
         break;
       case MOV_E_M:
         cout << "MOV_E_M - move register M to register E";
         break;
+      case MOV_E_A:
+        cout << "MOV_E_A - move register A to register E";
+        break;
+      case MOV_H_B:
+        cout << "MOV_H_B - move register B to register H";
+        break;
+      case MOV_H_C:
+        cout << "MOV_H_C - move register C to register H";
+        break;
+      case MOV_H_D:
+        cout << "MOV_H_D - move register D to register H";
+        break;
+      case MOV_H_E:
+        cout << "MOV_H_E - move register E to register H";
+        break;
+      case MOV_H_H:
+        cout << "MOV_H_H - move register H to register H";
+        break;
+      case MOV_H_L:
+        cout << "MOV_H_L - move register L to register H";
+        break;
+      case MOV_H_M:
+        cout << "MOV_H_M - move register M to register H";
+        break;
+      case MOV_H_A:
+        cout << "MOV_H_A - move register A to register H";
+        break;
+      case MOV_L_B:
+        cout << "MOV_L_B - move register B to register L";
+        break;
+      case MOV_L_C:
+        cout << "MOV_L_C - move register C to register L";
+        break;
+      case MOV_L_D:
+        cout << "MOV_L_D - move register D to register L";
+        break;
+      case MOV_L_E:
+        cout << "MOV_L_E - move register E to register L";
+        break;
+      case MOV_L_H:
+        cout << "MOV_L_H - move register H to register L";
+        break;
+      case MOV_L_L:
+        cout << "MOV_L_L - move register L to register L";
+        break;
+      case MOV_L_M:
+        cout << "MOV_L_M - move register M to register L";
+        break;
+      case MOV_L_A:
+        cout << "MOV_L_A - move register A to register L";
+        break;
       case MOV_M_B:
         cout << "MOV_M_B - move register B to register M";
+        break;
+      case MOV_M_C:
+        cout << "MOV_M_C - move register C to register M";
+        break;
+      case MOV_M_D:
+        cout << "MOV_M_D - move register D to register M";
+        break;
+      case MOV_M_E:
+        cout << "MOV_M_E - move register E to register M";
+        break;
+      case MOV_M_H:
+        cout << "MOV_M_H - move register H to register M";
+        break;
+      case MOV_M_L:
+        cout << "MOV_M_L - move register L to register M";
+        break;
+      case MOV_M_M:
+        cout << "MOV_M_M - move register M to itself";
         break;
       case MOV_M_A:
         cout << "MOV_M_A - move register A to register M";
         break;
-      case MOV_M_M:
-        cout << "MOV_M_M - move register M to itself";
+      case MOV_A_B:
+        cout << "MOV_A_B - move register B to register A";
+        break;
+      case MOV_A_C:
+        cout << "MOV_A_C - move register C to register A";
+        break;
+      case MOV_A_D:
+        cout << "MOV_A_D - move register D to register A";
+        break;
+      case MOV_A_E:
+        cout << "MOV_A_E - move register E to register A";
+        break;
+      case MOV_A_H:
+        cout << "MOV_A_H - move register H to register A";
+        break;
+      case MOV_A_L:
+        cout << "MOV_A_L - move register L to register A";
+        break;
+      case MOV_A_M:
+        cout << "MOV_A_M - move register M to register A";
+        break;
+      case MOV_A_A:
+        cout << "MOV_A_A - move register A to register A";
         break;
       default:
         cout << "Unsupported OpCode";
