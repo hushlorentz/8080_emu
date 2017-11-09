@@ -54,6 +54,7 @@ class CPU
     void moveRegisterToRegister(uint8_t opCode);
     void moveMemoryToAccumulator(uint8_t upperBitsAddress, uint8_t lowerBitsAddress);
     void moveAccumulatorToMemory(uint8_t upperbitsAddress, uint8_t lowerBitsAddress);
+    void addValueToAccumulator(uint8_t opCode, uint8_t carry);
 };
 
 #endif

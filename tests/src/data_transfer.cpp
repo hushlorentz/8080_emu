@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../../src/cpu.h"
 #include "../../src/op_codes.h"
 

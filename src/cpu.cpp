@@ -201,6 +201,30 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case STAX_D:
         moveAccumulatorToMemory(registerD, registerE);  
         break;
+      case ADD_B:
+      case ADD_C:
+      case ADD_D:
+      case ADD_E:
+      case ADD_H:
+      case ADD_L:
+      case ADD_A:
+        addValueToAccumulator(*registerMap[*pc & 7], 0);
+        break;
+      case ADD_M:
+        addValueToAccumulator(registerM(), 0);
+        break;
+      case ADC_B:
+      case ADC_C:
+      case ADC_D:
+      case ADC_E:
+      case ADC_H:
+      case ADC_L:
+      case ADC_A:
+        addValueToAccumulator(*registerMap[*pc & 7], carryBitSet() ? 1 : 0);
+        break;
+      case ADC_M:
+        addValueToAccumulator(registerM(), carryBitSet() ? 1 : 0);
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -269,10 +293,7 @@ void CPU::setAuxiliaryCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operan
 
 bool CPU::checkAuxiliaryCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand)
 {
-  uint8_t regAuxCarryBit = (reg >> AUXILIARY_CARRY_SHIFT) & 1;
-  uint8_t sumAuxCarryBit = ((reg + operand) >> AUXILIARY_CARRY_SHIFT) & 1;
-
-  return (regAuxCarryBit == 1 && sumAuxCarryBit == 0);
+  return hasCarryAtBitIndex(reg, operand, AUXILIARY_CARRY_SHIFT);
 }
 
 void CPU::decrementRegister(uint8_t *reg)
@@ -345,10 +366,7 @@ void CPU::setCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand)
 
 bool CPU::checkCarryBitFromRegisterAndOperand(uint8_t reg, uint8_t operand)
 {
-  uint8_t regCarryBit = (reg >> CARRY_SHIFT) & 1;
-  uint8_t sumCarryBit = ((reg + operand) >> CARRY_SHIFT) & 1;
-
-  return (regCarryBit == 1 && sumCarryBit == 0);
+  return hasCarryAtBitIndex(reg, operand, CARRY_SHIFT);
 }
 
 void CPU::moveRegisterToRegister(uint8_t opCode)
@@ -381,4 +399,17 @@ void CPU::moveMemoryToAccumulator(uint8_t upperBitsAddress, uint8_t lowerBitsAdd
 void CPU::moveAccumulatorToMemory(uint8_t upperBitsAddress, uint8_t lowerBitsAddress)
 {
   memory[upperBitsAddress << 8 | lowerBitsAddress] = registerA;
+}
+
+void CPU::addValueToAccumulator(uint8_t value, uint8_t carry)
+{
+  setAuxiliaryCarryBitFromRegisterAndOperand(registerA, value);
+  setCarryBitFromRegisterAndOperand(registerA, value);
+  registerA += value;
+  setStatusFromRegister(registerA);
+
+  if (carry)
+  {
+    addValueToAccumulator(1, 0);
+  }
 }
