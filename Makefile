@@ -35,4 +35,4 @@ $(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/src/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm $(OBJ_DIR)/*.o $(TEST_OBJ_DIR)/*.o $(EXE) $(TEST_EXE)
+	rm -f $(OBJ_DIR)/*.o $(TEST_OBJ_DIR)/*.o $(EXE) $(TEST_EXE)
