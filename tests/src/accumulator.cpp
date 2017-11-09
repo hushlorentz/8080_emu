@@ -157,4 +157,95 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
 
     REQUIRE(cpu.registerA == 0x7f);
   }
+
+  SECTION("A program can subtract a register from the accumulator")
+  {
+    uint8_t program[1] = { SUB_H };
+    cpu.registerA = 0x0d;
+    cpu.registerH = 0x08;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0x05);
+  }
+
+  SECTION("Subtracting 10 from 5 in the accumulator sets the sign flag")
+  {
+    uint8_t program[1] = { SUB_B };
+    cpu.registerA = 0x05;
+    cpu.registerB = 0x0a;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == (uint8_t)-5);
+    REQUIRE(cpu.signBitSet());
+  }
+
+  SECTION("If subtracting from the accumulator does not cause a carry, the carry flag is set")
+  {
+    uint8_t program[1] = { SUB_D };
+    cpu.registerA = 0x05;
+    cpu.registerD = 0x05;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0);
+    REQUIRE(cpu.carryBitSet());
+  }
+
+  SECTION("If subtracting from the accumulator does cause a carry, the carry flag is not set")
+  {
+    uint8_t program[1] = { SUB_L };
+    cpu.registerA = 0xff;
+    cpu.registerL = 0xff;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0);
+    REQUIRE(!cpu.carryBitSet());
+  }
+
+  SECTION("Subtractions from the accumulator cause the zero flag to be set if the result is 0")
+  {
+    uint8_t program[1] = { SUB_C };
+    cpu.registerA = 0x06;
+    cpu.registerC = 0x06;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0);
+    REQUIRE(cpu.zeroBitSet());
+  }
+
+  SECTION("A program can subtract a value in main memory from the accumulator")
+  {
+    uint8_t program[1] = { SUB_M };
+    cpu.registerA = 0xcc;
+    cpu.memory[0] = 0xbb;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0x11);
+  }
+
+  SECTION("Subtracting the accumulator from itself always produces 0")
+  {
+    uint8_t program[1] = { SUB_A };
+    cpu.registerA = 0xcc;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0);
+    REQUIRE(cpu.zeroBitSet());
+  }
+
+  SECTION("A program can subtract all the registers and main memory from the accumulator")
+  {
+    uint8_t program[7] = { SUB_B, SUB_C, SUB_D, SUB_E, SUB_H, SUB_L, SUB_M };
+    cpu.registerA = 0xff;
+    cpu.registerB = 0x1;
+    cpu.registerC = 0x2;
+    cpu.registerD = 0x3;
+    cpu.registerE = 0x4;
+    cpu.registerH = 0x5;
+    cpu.registerL = 0x6;
+    cpu.memory[0x0506] = 0x7;
+    uint8_t expectedResult = 0xff - (0x1 + 0x2 + 0x3 + 0x4 + 0x5 + 0x6 + 0x7);
+
+    cpu.processProgram(program, 7);
+    REQUIRE(cpu.registerA == expectedResult);
+  }
 }

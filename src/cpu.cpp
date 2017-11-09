@@ -220,10 +220,22 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ADC_H:
       case ADC_L:
       case ADC_A:
-        addValueToAccumulator(*registerMap[*pc & 7], carryBitSet() ? 1 : 0);
+        addValueToAccumulator(registerValueFromOpCode(*pc), carryBitSet() ? 1 : 0);
         break;
       case ADC_M:
         addValueToAccumulator(registerM(), carryBitSet() ? 1 : 0);
+        break;
+      case SUB_B:
+      case SUB_C:
+      case SUB_D:
+      case SUB_E:
+      case SUB_H:
+      case SUB_L:
+      case SUB_A:
+        subtractValueFromAccumulator(registerValueFromOpCode(*pc));
+        break;  
+      case SUB_M:
+        subtractValueFromAccumulator(registerM());
         break;
       default:
         throw UnhandledOpCodeException(*pc);
@@ -412,4 +424,16 @@ void CPU::addValueToAccumulator(uint8_t value, uint8_t carry)
   {
     addValueToAccumulator(1, 0);
   }
+}
+
+void CPU::subtractValueFromAccumulator(uint8_t value)
+{
+  checkCarryBitFromRegisterAndOperand(registerA, value) ? clearStatus(CARRY_BIT) : setStatus(CARRY_BIT);
+  registerA -= value;
+  setStatusFromRegister(registerA);
+}
+
+uint8_t CPU::registerValueFromOpCode(uint8_t opCode)
+{
+  return *registerMap[opCode & 7];
 }

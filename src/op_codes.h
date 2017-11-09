@@ -103,3 +103,11 @@
 #define ADC_L 0x8d
 #define ADC_M 0x8e
 #define ADC_A 0x8f
+#define SUB_B 0x90
+#define SUB_C 0x91
+#define SUB_D 0x92
+#define SUB_E 0x93
+#define SUB_H 0x94
+#define SUB_L 0x95
+#define SUB_M 0x96
+#define SUB_A 0x97
