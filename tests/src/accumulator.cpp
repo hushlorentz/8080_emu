@@ -264,4 +264,82 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     REQUIRE(!cpu.parityBitSet());
     REQUIRE(!cpu.signBitSet());
   }
+
+  SECTION("A program can perform a logical AND with a register and the accumulator")
+  {
+    uint8_t program[1] = { ANA_D };
+    cpu.registerA = 0x66;
+    cpu.registerD = 0x06;
+
+    cpu.processProgram(program, 1);
+
+    REQUIRE(cpu.registerA == 0x06);
+  }
+
+  SECTION("ANA ops set the correct status bits")
+  {
+    uint8_t program[2] = { STC, ANA_M };
+    cpu.registerA = 0xF6;
+    cpu.memory[0] = 0xF0;
+
+    cpu.processProgram(program, 2);
+
+    REQUIRE(cpu.registerA == 0xF0);
+    REQUIRE(!cpu.carryBitSet());
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(cpu.parityBitSet());
+    REQUIRE(cpu.signBitSet());
+  }
+
+  SECTION("A program can perform a logical XOR with a register and the accumulator")
+  {
+    uint8_t program[1] = { XRA_E };
+    cpu.registerA = 0x66;
+    cpu.registerE = 0x66;
+
+    cpu.processProgram(program, 1);
+
+    REQUIRE(cpu.registerA == 0x0);
+  }
+
+  SECTION("XRA ops set the correct status bits")
+  {
+    uint8_t program[2] = { STC, XRA_M };
+    cpu.registerA = 0x06;
+    cpu.memory[0] = 0x60;
+
+    cpu.processProgram(program, 2);
+
+    REQUIRE(cpu.registerA == 0x66);
+    REQUIRE(!cpu.carryBitSet());
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(cpu.parityBitSet());
+    REQUIRE(!cpu.signBitSet());
+  }
+
+  SECTION("A program can perform a logical OR with a register and the accumulator")
+  {
+    uint8_t program[1] = { ORA_L };
+    cpu.registerA = 0xab;
+    cpu.registerL = 0x11;
+
+    cpu.processProgram(program, 1);
+
+    REQUIRE(cpu.registerA == 0xbb);
+  }
+
+  SECTION("ORA ops set the correct status bits")
+  {
+    uint8_t program[2] = { STC, ORA_M };
+    cpu.registerA = 0x33;
+    cpu.memory[0] = 0x0F;
+
+    cpu.processProgram(program, 2);
+
+    REQUIRE(cpu.registerA == 0x3F);
+    REQUIRE(!cpu.carryBitSet());
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(cpu.parityBitSet());
+    REQUIRE(!cpu.signBitSet());
+  }
 }

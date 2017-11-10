@@ -57,6 +57,9 @@ class CPU
     void addValueToAccumulator(uint8_t opCode, uint8_t carry);
     uint8_t registerValueFromOpCode(uint8_t opCode);
     void subtractValueFromAccumulator(uint8_t value);
+    void logicalANDWithAccumulator(uint8_t value);
+    void logicalXORWithAccumulator(uint8_t value);
+    void logicalORWithAccumulator(uint8_t value);
 };
 
 #endif

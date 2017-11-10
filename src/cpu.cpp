@@ -249,6 +249,42 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SBB_M:
         subtractValueFromAccumulator(registerM() + 1);
         break;
+      case ANA_B:
+      case ANA_C:
+      case ANA_D:
+      case ANA_E:
+      case ANA_H:
+      case ANA_L:
+      case ANA_A:
+        logicalANDWithAccumulator(registerValueFromOpCode(*pc));  
+        break;
+      case ANA_M:
+        logicalANDWithAccumulator(registerM());  
+        break;
+      case XRA_B:
+      case XRA_C:
+      case XRA_D:
+      case XRA_E:
+      case XRA_H:
+      case XRA_L:
+      case XRA_A:
+        logicalXORWithAccumulator(registerValueFromOpCode(*pc));  
+        break;
+      case XRA_M:
+        logicalXORWithAccumulator(registerM());
+        break;
+      case ORA_B:
+      case ORA_C:
+      case ORA_D:
+      case ORA_E:
+      case ORA_H:
+      case ORA_L:
+      case ORA_A:
+        logicalORWithAccumulator(registerValueFromOpCode(*pc));  
+        break;
+      case ORA_M:
+        logicalORWithAccumulator(registerM());
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -449,4 +485,25 @@ void CPU::subtractValueFromAccumulator(uint8_t value)
 uint8_t CPU::registerValueFromOpCode(uint8_t opCode)
 {
   return *registerMap[opCode & 7];
+}
+
+void CPU::logicalANDWithAccumulator(uint8_t value)
+{
+  clearStatus(CARRY_BIT);
+  registerA &= value;
+  setStatusFromRegister(registerA);
+}
+
+void CPU::logicalXORWithAccumulator(uint8_t value)
+{
+  clearStatus(CARRY_BIT);
+  registerA ^= value;
+  setStatusFromRegister(registerA);
+}
+
+void CPU::logicalORWithAccumulator(uint8_t value)
+{
+  clearStatus(CARRY_BIT);
+  registerA |= value;
+  setStatusFromRegister(registerA);
 }
