@@ -249,4 +249,19 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.processProgram(program, 7);
     REQUIRE(cpu.registerA == expectedResult);
   }
+
+  SECTION("A program can perform a subtraction with a borrow")
+  {
+    uint8_t program[1] = { SBB_L };
+    cpu.registerA = 0x04;
+    cpu.registerL = 0x02;
+
+    cpu.processProgram(program, 1);
+    REQUIRE(cpu.registerA == 0x01);
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(!cpu.carryBitSet());
+    REQUIRE(cpu.auxiliaryCarryBitSet());
+    REQUIRE(!cpu.parityBitSet());
+    REQUIRE(!cpu.signBitSet());
+  }
 }

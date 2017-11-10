@@ -237,6 +237,18 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SUB_M:
         subtractValueFromAccumulator(registerM());
         break;
+      case SBB_B:
+      case SBB_C:
+      case SBB_D:
+      case SBB_E:
+      case SBB_H:
+      case SBB_L:
+      case SBB_A:
+        subtractValueFromAccumulator(registerValueFromOpCode(*pc) + 1);
+        break;
+      case SBB_M:
+        subtractValueFromAccumulator(registerM() + 1);
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -429,6 +441,7 @@ void CPU::addValueToAccumulator(uint8_t value, uint8_t carry)
 void CPU::subtractValueFromAccumulator(uint8_t value)
 {
   checkCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? clearStatus(CARRY_BIT) : setStatus(CARRY_BIT);
+  checkAuxiliaryCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? setStatus(AUXILIARY_CARRY_BIT) : clearStatus(AUXILIARY_CARRY_BIT);
   registerA += (~value + 1);
   setStatusFromRegister(registerA);
 }

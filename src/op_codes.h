@@ -111,3 +111,11 @@
 #define SUB_L 0x95
 #define SUB_M 0x96
 #define SUB_A 0x97
+#define SBB_B 0x98
+#define SBB_C 0x99
+#define SBB_D 0x9a
+#define SBB_E 0x9b
+#define SBB_H 0x9c
+#define SBB_L 0x9d
+#define SBB_M 0x9e
+#define SBB_A 0x9f
