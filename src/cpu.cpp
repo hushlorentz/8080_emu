@@ -428,8 +428,8 @@ void CPU::addValueToAccumulator(uint8_t value, uint8_t carry)
 
 void CPU::subtractValueFromAccumulator(uint8_t value)
 {
-  checkCarryBitFromRegisterAndOperand(registerA, value) ? clearStatus(CARRY_BIT) : setStatus(CARRY_BIT);
-  registerA -= value;
+  checkCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? clearStatus(CARRY_BIT) : setStatus(CARRY_BIT);
+  registerA += (~value + 1);
   setStatusFromRegister(registerA);
 }
 

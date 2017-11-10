@@ -183,18 +183,18 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
   {
     uint8_t program[1] = { SUB_D };
     cpu.registerA = 0x05;
-    cpu.registerD = 0x05;
+    cpu.registerD = 0x64;
 
     cpu.processProgram(program, 1);
-    REQUIRE(cpu.registerA == 0);
+    REQUIRE(cpu.registerA == (uint8_t)(0x05 - 0x64));
     REQUIRE(cpu.carryBitSet());
   }
 
   SECTION("If subtracting from the accumulator does cause a carry, the carry flag is not set")
   {
     uint8_t program[1] = { SUB_L };
-    cpu.registerA = 0xff;
-    cpu.registerL = 0xff;
+    cpu.registerA = 0x3e;
+    cpu.registerL = 0x3e;
 
     cpu.processProgram(program, 1);
     REQUIRE(cpu.registerA == 0);
@@ -222,7 +222,7 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     REQUIRE(cpu.registerA == 0x11);
   }
 
-  SECTION("Subtracting the accumulator from itself always produces 0")
+  SECTION("Subtracting the accumulator from itself always produces 0 and resets the carry bit")
   {
     uint8_t program[1] = { SUB_A };
     cpu.registerA = 0xcc;
@@ -230,6 +230,7 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.processProgram(program, 1);
     REQUIRE(cpu.registerA == 0);
     REQUIRE(cpu.zeroBitSet());
+    REQUIRE(!cpu.carryBitSet());
   }
 
   SECTION("A program can subtract all the registers and main memory from the accumulator")
