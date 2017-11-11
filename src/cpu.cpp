@@ -285,6 +285,18 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ORA_M:
         logicalORWithAccumulator(registerM());
         break;
+      case CMP_B:
+      case CMP_C:
+      case CMP_D:
+      case CMP_E:
+      case CMP_H:
+      case CMP_L:
+      case CMP_A:
+        compareValueToAccumulator(registerValueFromOpCode(*pc));
+        break;
+      case CMP_M:  
+        compareValueToAccumulator(registerM());
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -506,4 +518,12 @@ void CPU::logicalORWithAccumulator(uint8_t value)
   clearStatus(CARRY_BIT);
   registerA |= value;
   setStatusFromRegister(registerA);
+}
+
+void CPU::compareValueToAccumulator(uint8_t value)
+{
+  checkCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? clearStatus(CARRY_BIT) : setStatus(CARRY_BIT);
+  checkAuxiliaryCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? setStatus(AUXILIARY_CARRY_BIT) : clearStatus(AUXILIARY_CARRY_BIT);
+  uint8_t diff = registerA + (~value + 1);
+  setStatusFromRegister(diff);
 }

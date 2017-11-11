@@ -143,3 +143,11 @@
 #define ORA_L 0xb5
 #define ORA_M 0xb6
 #define ORA_A 0xb7
+#define CMP_B 0xb8
+#define CMP_C 0xb9
+#define CMP_D 0xba
+#define CMP_E 0xbb
+#define CMP_H 0xbc
+#define CMP_L 0xbd
+#define CMP_M 0xbe
+#define CMP_A 0xbf

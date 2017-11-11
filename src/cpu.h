@@ -60,6 +60,7 @@ class CPU
     void logicalANDWithAccumulator(uint8_t value);
     void logicalXORWithAccumulator(uint8_t value);
     void logicalORWithAccumulator(uint8_t value);
+    void compareValueToAccumulator(uint8_t value);
 };
 
 #endif

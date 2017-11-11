@@ -342,4 +342,40 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     REQUIRE(cpu.parityBitSet());
     REQUIRE(!cpu.signBitSet());
   }
+
+  SECTION("The CMP_H opcode sets the zero bit if the contents of H equal the accumulator")
+  {
+    uint8_t program[1] = { CMP_H };
+    cpu.registerA = 0xb5;
+    cpu.registerH = 0xb5;
+
+    cpu.processProgram(program, 1);
+
+    REQUIRE(cpu.zeroBitSet());
+    REQUIRE(!cpu.carryBitSet());
+  }
+
+  SECTION("The CMP_B opcode sets the carry bit if register b is greater than the accumulator")
+  {
+    uint8_t program[1] = { CMP_B };
+    cpu.registerA = -0x1b;
+    cpu.registerB = -0x05;
+
+    cpu.processProgram(program, 1);
+
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(cpu.carryBitSet());
+  }
+
+  SECTION("The CMP_M opcode sets neither the carry bit nor the zero bit if the value in memory is less than the accumulator")
+  {
+    uint8_t program[1] = { CMP_M };
+    cpu.registerA = 0xff;
+    cpu.memory[0] = 0xfe;
+
+    cpu.processProgram(program, 1);
+    
+    REQUIRE(!cpu.zeroBitSet());
+    REQUIRE(!cpu.carryBitSet());
+  }
 }
