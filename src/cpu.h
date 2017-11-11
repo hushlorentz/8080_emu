@@ -61,6 +61,10 @@ class CPU
     void logicalXORWithAccumulator(uint8_t value);
     void logicalORWithAccumulator(uint8_t value);
     void compareValueToAccumulator(uint8_t value);
+    void rotateAccumulatorLeft();
+    void rotateAccumulatorRight();
+    void rotateAccumulatorLeftWithCarry();
+    void rotateAccumulatorRightWithCarry();
 };
 
 #endif

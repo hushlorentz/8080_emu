@@ -297,6 +297,18 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CMP_M:  
         compareValueToAccumulator(registerM());
         break;
+      case RLC:
+        rotateAccumulatorLeft();
+        break;  
+      case RRC:
+        rotateAccumulatorRight();
+        break;
+      case RAL:
+        rotateAccumulatorLeftWithCarry();
+        break;  
+      case RAR:
+        rotateAccumulatorRightWithCarry();
+        break;  
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -526,4 +538,36 @@ void CPU::compareValueToAccumulator(uint8_t value)
   checkAuxiliaryCarryBitFromRegisterAndOperand(registerA, ~value + 1) ? setStatus(AUXILIARY_CARRY_BIT) : clearStatus(AUXILIARY_CARRY_BIT);
   uint8_t diff = registerA + (~value + 1);
   setStatusFromRegister(diff);
+}
+
+void CPU::rotateAccumulatorLeft()
+{
+  bool highBitSet = (registerA >> CARRY_SHIFT & 1) == 1;
+  highBitSet ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
+  registerA <<= 1;
+  registerA |= highBitSet ? 1 : 0;
+}
+
+void CPU::rotateAccumulatorRight()
+{
+  bool lowBitSet = (registerA & 1) == 1;
+  lowBitSet ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
+  registerA >>= 1;
+  registerA |= lowBitSet ? 1 << CARRY_SHIFT : 0;
+}
+
+void CPU::rotateAccumulatorLeftWithCarry()
+{
+  bool carrySet = carryBitSet();
+  (registerA >> CARRY_SHIFT & 1) == 1 ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
+  registerA <<= 1;
+  registerA |= carrySet ? 1 : 0;
+}
+
+void CPU::rotateAccumulatorRightWithCarry()
+{
+  bool carrySet = carryBitSet();
+  (registerA & 1) == 1 ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
+  registerA >>= 1;
+  registerA |= carrySet ? 1 << CARRY_SHIFT : 0;
 }
