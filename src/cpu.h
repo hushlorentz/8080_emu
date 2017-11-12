@@ -28,11 +28,17 @@ class CPU
     uint8_t registerH;
     uint8_t registerL;
     uint8_t registerM();
+    uint16_t stackPointer;
+    uint8_t status;
+    vector<uint8_t *> registerPairB;
+    vector<uint8_t *> registerPairD;
+    vector<uint8_t *> registerPairH;
+    vector<uint8_t *> registerPairA;
     vector<uint8_t> memory;
     map<uint8_t, uint8_t *> registerMap;
+    map<uint8_t, vector<uint8_t *> *> registerPairMap;
 
   private:
-    uint8_t status;
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);
     void flipStatusBit(uint8_t bit);
@@ -65,6 +71,17 @@ class CPU
     void rotateAccumulatorRight();
     void rotateAccumulatorLeftWithCarry();
     void rotateAccumulatorRightWithCarry();
+    vector<uint8_t *> * registerPairFromOpCode(uint8_t opCode);
+    void pushRegisterPairOnStack(vector<uint8_t *> * pair);
+    void popStackToRegisterPair(vector<uint8_t *> * pair);
+    void popStackToAccumulatorAndStatusPair();
+    void setStatusRegister(uint8_t value);
+    uint16_t valueOfRegisterPair(vector<uint8_t *> * pair);
+    void addValueToRegisterPairH(uint16_t value);
+    void incrementRegisterPair(vector<uint8_t *> * pair);
+    void decrementRegisterPair(vector<uint8_t *> * pair);
+    void exchangeRegisterPairs(vector<uint8_t *> * p1, vector<uint8_t *> * p2);
+    void exchangeRegistersAndMemory();
 };
 
 #endif

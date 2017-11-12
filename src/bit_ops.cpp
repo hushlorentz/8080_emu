@@ -25,19 +25,28 @@ uint8_t getUpperNibble(uint8_t byte)
   return (byte >> 4) & 0x0F;
 }
 
-bool hasCarryAtBitIndex(uint8_t b1, uint8_t b2, uint8_t index)
+bool hasCarryAtBitIndex(uint16_t b1, uint16_t b2, uint16_t index)
 {
-  uint8_t masks[8] = {  0b00000001,
-    0b00000011,
-    0b00000111,
-    0b00001111,
-    0b00011111,
-    0b00111111,
-    0b01111111,
-    0b11111111 };
+  uint16_t masks[16] = {  0b0000000000000001,
+                          0b0000000000000011,
+                          0b0000000000000111,
+                          0b0000000000001111,
+                          0b0000000000011111,
+                          0b0000000000111111,
+                          0b0000000001111111,
+                          0b0000000011111111,
+                          0b0000000111111111,
+                          0b0000001111111111,
+                          0b0000011111111111,
+                          0b0000111111111111,
+                          0b0001111111111111,
+                          0b0011111111111111,
+                          0b0111111111111111,
+                          0b1111111111111111 
+  };
 
-  uint8_t b1Slice = b1 & masks[index];
-  uint8_t b2Slice = b2 & masks[index];
+  uint16_t b1Slice = b1 & masks[index];
+  uint16_t b2Slice = b2 & masks[index];
 
   return b1Slice + b2Slice > masks[index];
 }

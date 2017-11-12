@@ -18,16 +18,36 @@ using namespace std;
 #define REGISTER_L 5
 #define REGISTER_M 6
 
-CPU::CPU() : registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0), status(0)
+#define REGISTER_PAIR_B 0
+#define REGISTER_PAIR_D 1
+#define REGISTER_PAIR_H 2
+#define REGISTER_PAIR_A 3
+
+CPU::CPU() : registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(0), status(0x02)
 {
   memory.resize(MAX_MEMORY);
-  registerMap[0] = &registerB;
-  registerMap[1] = &registerC;
-  registerMap[2] = &registerD;
-  registerMap[3] = &registerE;
-  registerMap[4] = &registerH;
-  registerMap[5] = &registerL;
-  registerMap[7] = &registerA;
+
+  registerMap[REGISTER_B] = &registerB;
+  registerMap[REGISTER_C] = &registerC;
+  registerMap[REGISTER_D] = &registerD;
+  registerMap[REGISTER_E] = &registerE;
+  registerMap[REGISTER_H] = &registerH;
+  registerMap[REGISTER_L] = &registerL;
+  registerMap[REGISTER_A] = &registerA;
+
+  registerPairB.push_back(&registerB);
+  registerPairB.push_back(&registerC);
+  registerPairD.push_back(&registerD);
+  registerPairD.push_back(&registerE);
+  registerPairH.push_back(&registerH);
+  registerPairH.push_back(&registerL);
+  registerPairA.push_back(&registerA);
+  registerPairA.push_back(&status);
+
+  registerPairMap[REGISTER_PAIR_B] = &registerPairB;
+  registerPairMap[REGISTER_PAIR_D] = &registerPairD;
+  registerPairMap[REGISTER_PAIR_H] = &registerPairH;
+  registerPairMap[REGISTER_PAIR_A] = &registerPairA;
 }
 
 bool CPU::carryBitSet()
@@ -309,6 +329,53 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case RAR:
         rotateAccumulatorRightWithCarry();
         break;  
+      case PUSH_B:
+      case PUSH_D:
+      case PUSH_H:
+      case PUSH_PSW:  
+        pushRegisterPairOnStack(registerPairFromOpCode(*pc));
+        break; 
+      case POP_B:
+      case POP_D:
+      case POP_H:
+        popStackToRegisterPair(registerPairFromOpCode(*pc));
+        break;
+      case POP_PSW:
+        popStackToAccumulatorAndStatusPair();
+        break;
+      case DAD_B:
+      case DAD_D:
+      case DAD_H:
+        addValueToRegisterPairH(valueOfRegisterPair(registerPairFromOpCode(*pc)));  
+        break;
+      case DAD_SP:
+        addValueToRegisterPairH(stackPointer);
+        break;
+      case INX_B:
+      case INX_D:
+      case INX_H:
+        incrementRegisterPair(registerPairFromOpCode(*pc));
+        break;  
+      case INX_SP:
+        stackPointer++;
+        break;  
+      case DCX_B:  
+      case DCX_D:  
+      case DCX_H:  
+        decrementRegisterPair(registerPairFromOpCode(*pc));
+        break;
+      case DCX_SP:
+        stackPointer--;
+        break;
+      case XCHG:
+        exchangeRegisterPairs(registerPairMap[REGISTER_PAIR_D], registerPairMap[REGISTER_PAIR_H]);  
+        break;
+      case XTHL:
+        exchangeRegistersAndMemory();
+        break;
+      case SPHL:
+        stackPointer = registerH << 8 | registerL;
+        break;
       default:
         throw UnhandledOpCodeException(*pc);
         break;  
@@ -333,7 +400,7 @@ void CPU::flipStatusBit(uint8_t bit)
 
 bool CPU::allClear()
 {
-  return status == 0 && registerB == 0 && registerC == 0 &&
+  return status == 0x02 && stackPointer == 0 && registerB == 0 && registerC == 0 &&
     registerD == 0 && registerE == 0 && registerH == 0 &&
     registerL == 0 && registerA == 0;
 }
@@ -570,4 +637,89 @@ void CPU::rotateAccumulatorRightWithCarry()
   (registerA & 1) == 1 ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
   registerA >>= 1;
   registerA |= carrySet ? 1 << CARRY_SHIFT : 0;
+}
+
+vector<uint8_t *> * CPU::registerPairFromOpCode(uint8_t opCode)
+{
+  return registerPairMap[(opCode >> 4) & 0x3];
+}
+
+void CPU::pushRegisterPairOnStack(vector<uint8_t *> * pair)
+{
+  memory[stackPointer - 1] = *((*pair)[0]);
+  memory[stackPointer - 2] = *((*pair)[1]);
+  stackPointer -= 2;
+}
+
+void CPU::popStackToRegisterPair(vector<uint8_t *> * pair)
+{
+  *((*pair)[0]) = memory[stackPointer + 1];
+  *((*pair)[1]) = memory[stackPointer];
+  stackPointer += 2;
+}
+
+void CPU::popStackToAccumulatorAndStatusPair()
+{
+  registerA = memory[stackPointer + 1];
+  setStatusRegister(memory[stackPointer]);
+  stackPointer += 2;
+}
+
+void CPU::setStatusRegister(uint8_t value)
+{
+  status = value;
+  status |= 0x02;
+  status &= 0xd7;
+}
+
+uint16_t CPU::valueOfRegisterPair(vector<uint8_t *> * pair)
+{
+  return *(*pair)[0] << 8 | *(*pair)[1];
+}
+
+void CPU::addValueToRegisterPairH(uint16_t value)
+{
+  vector<uint8_t *> * hlPair = registerPairMap[REGISTER_PAIR_H];
+  uint16_t HLValue = *(*hlPair)[0] << 8 | *(*hlPair)[1];
+  hasCarryAtBitIndex(HLValue, value, 15) ? setStatus(CARRY_BIT) : clearStatus(CARRY_BIT);
+
+  uint16_t sum = HLValue + value;
+  registerH = sum >> 8;
+  registerL = sum & 0xff;
+}
+
+void CPU::incrementRegisterPair(vector<uint8_t *> * pair)
+{
+  uint16_t value = *(*pair)[0] << 8 | *(*pair)[1];
+  value++;
+  *(*pair)[0] = value >> 8;
+  *(*pair)[1] = value & 0xff;
+}
+
+void CPU::decrementRegisterPair(vector<uint8_t *> * pair)
+{
+  uint16_t value = *(*pair)[0] << 8 | *(*pair)[1];
+  value--;
+  *(*pair)[0] = value >> 8;
+  *(*pair)[1] = value & 0xff;
+}
+
+void CPU::exchangeRegisterPairs(vector<uint8_t *> * p1, vector<uint8_t *> * p2)
+{
+  uint8_t tempHighBits = *(*p1)[0];
+  uint8_t tempLowBits = *(*p1)[1];
+  *(*p1)[0] = *(*p2)[0];
+  *(*p1)[1] = *(*p2)[1];
+  *(*p2)[0] = tempHighBits;
+  *(*p2)[1] = tempLowBits;
+}
+
+void CPU::exchangeRegistersAndMemory()
+{
+  uint8_t tempHighBits = registerL;
+  uint8_t tempLowBits = registerH;
+  registerL = memory[stackPointer];
+  registerH = memory[stackPointer + 1];
+  memory[stackPointer] = tempHighBits;
+  memory[stackPointer + 1] = tempLowBits;
 }
