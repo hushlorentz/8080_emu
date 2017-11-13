@@ -39,6 +39,7 @@ class CPU
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
 
   private:
+    void handleByteOp(uint8_t **pc);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);
     void flipStatusBit(uint8_t bit);

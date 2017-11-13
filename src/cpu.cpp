@@ -77,10 +77,53 @@ bool CPU::auxiliaryCarryBitSet()
 
 void CPU::processProgram(uint8_t *program, uint16_t programSize)
 {
-  for (uint8_t *pc = program; pc < program + programSize; pc++)
+  uint8_t *pc = program;
+
+  while (pc < program + programSize)
   {
     switch (*pc)
     {
+      case LXI_B:
+      case LXI_D:
+      case LXI_H:
+      case LXI_SP:
+      case STA:
+      case LDA:
+      case SHLD:
+      case LXLD:
+        handle3ByteOp(&pc);
+        break;  
+      case MVI_B:
+      case MVI_C:
+      case MVI_D:
+      case MVI_E:
+      case MVI_H:
+      case MVI_L:  
+      case MVI_M:  
+      case MVI_A:  
+      case ADI:
+      case ACI:
+      case SUI:
+      case SBI:
+      case ANI:
+      case XRI:
+      case ORI:
+      case CPI:
+        handle2ByteOp(&pc);  
+        break;
+      default:
+        handleByteOp(&pc);
+        break;
+    }
+  }
+}
+
+void CPU::handleByteOp(uint8_t **pc)
+{
+  uint8_t opCode = **pc;
+
+  switch (opCode)
+  {
       case MOV_B_B:
       case MOV_C_C:
       case MOV_D_D:
@@ -207,7 +250,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case MOV_A_H:
       case MOV_A_L:
       case MOV_A_M:
-        moveRegisterToRegister(*pc);
+        moveRegisterToRegister(opCode);
         break;  
       case LDX_B:
         moveMemoryToAccumulator(registerB, registerC);  
@@ -228,7 +271,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ADD_H:
       case ADD_L:
       case ADD_A:
-        addValueToAccumulator(*registerMap[*pc & 7], 0);
+        addValueToAccumulator(*registerMap[opCode & 7], 0);
         break;
       case ADD_M:
         addValueToAccumulator(registerM(), 0);
@@ -240,7 +283,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ADC_H:
       case ADC_L:
       case ADC_A:
-        addValueToAccumulator(registerValueFromOpCode(*pc), carryBitSet() ? 1 : 0);
+        addValueToAccumulator(registerValueFromOpCode(opCode), carryBitSet() ? 1 : 0);
         break;
       case ADC_M:
         addValueToAccumulator(registerM(), carryBitSet() ? 1 : 0);
@@ -252,7 +295,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SUB_H:
       case SUB_L:
       case SUB_A:
-        subtractValueFromAccumulator(registerValueFromOpCode(*pc));
+        subtractValueFromAccumulator(registerValueFromOpCode(opCode));
         break;  
       case SUB_M:
         subtractValueFromAccumulator(registerM());
@@ -264,7 +307,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SBB_H:
       case SBB_L:
       case SBB_A:
-        subtractValueFromAccumulator(registerValueFromOpCode(*pc) + (carryBitSet() ? 1 : 0));
+        subtractValueFromAccumulator(registerValueFromOpCode(opCode) + (carryBitSet() ? 1 : 0));
         break;
       case SBB_M:
         subtractValueFromAccumulator(registerM() + (carryBitSet() ? 1 : 0));
@@ -276,7 +319,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ANA_H:
       case ANA_L:
       case ANA_A:
-        logicalANDWithAccumulator(registerValueFromOpCode(*pc));  
+        logicalANDWithAccumulator(registerValueFromOpCode(opCode));  
         break;
       case ANA_M:
         logicalANDWithAccumulator(registerM());  
@@ -288,7 +331,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case XRA_H:
       case XRA_L:
       case XRA_A:
-        logicalXORWithAccumulator(registerValueFromOpCode(*pc));  
+        logicalXORWithAccumulator(registerValueFromOpCode(opCode));  
         break;
       case XRA_M:
         logicalXORWithAccumulator(registerM());
@@ -300,7 +343,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case ORA_H:
       case ORA_L:
       case ORA_A:
-        logicalORWithAccumulator(registerValueFromOpCode(*pc));  
+        logicalORWithAccumulator(registerValueFromOpCode(opCode));  
         break;
       case ORA_M:
         logicalORWithAccumulator(registerM());
@@ -312,7 +355,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CMP_H:
       case CMP_L:
       case CMP_A:
-        compareValueToAccumulator(registerValueFromOpCode(*pc));
+        compareValueToAccumulator(registerValueFromOpCode(opCode));
         break;
       case CMP_M:  
         compareValueToAccumulator(registerM());
@@ -333,12 +376,12 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case PUSH_D:
       case PUSH_H:
       case PUSH_PSW:  
-        pushRegisterPairOnStack(registerPairFromOpCode(*pc));
+        pushRegisterPairOnStack(registerPairFromOpCode(opCode));
         break; 
       case POP_B:
       case POP_D:
       case POP_H:
-        popStackToRegisterPair(registerPairFromOpCode(*pc));
+        popStackToRegisterPair(registerPairFromOpCode(opCode));
         break;
       case POP_PSW:
         popStackToAccumulatorAndStatusPair();
@@ -346,7 +389,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case DAD_B:
       case DAD_D:
       case DAD_H:
-        addValueToRegisterPairH(valueOfRegisterPair(registerPairFromOpCode(*pc)));  
+        addValueToRegisterPairH(valueOfRegisterPair(registerPairFromOpCode(opCode)));  
         break;
       case DAD_SP:
         addValueToRegisterPairH(stackPointer);
@@ -354,7 +397,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case INX_B:
       case INX_D:
       case INX_H:
-        incrementRegisterPair(registerPairFromOpCode(*pc));
+        incrementRegisterPair(registerPairFromOpCode(opCode));
         break;  
       case INX_SP:
         stackPointer++;
@@ -362,7 +405,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case DCX_B:  
       case DCX_D:  
       case DCX_H:  
-        decrementRegisterPair(registerPairFromOpCode(*pc));
+        decrementRegisterPair(registerPairFromOpCode(opCode));
         break;
       case DCX_SP:
         stackPointer--;
@@ -376,39 +419,12 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SPHL:
         stackPointer = registerH << 8 | registerL;
         break;
-      case LXI_B:
-      case LXI_D:
-      case LXI_H:
-      case LXI_SP:
-      case STA:
-      case LDA:
-      case SHLD:
-      case LXLD:
-        handle3ByteOp(&pc);
-        break;  
-      case MVI_B:
-      case MVI_C:
-      case MVI_D:
-      case MVI_E:
-      case MVI_H:
-      case MVI_L:  
-      case MVI_M:  
-      case MVI_A:  
-      case ADI:
-      case ACI:
-      case SUI:
-      case SBI:
-      case ANI:
-      case XRI:
-      case ORI:
-      case CPI:
-        handle2ByteOp(&pc);  
-        break;
       default:
-        throw UnhandledOpCodeException(*pc);
+        throw UnhandledOpCodeException(opCode);
         break;  
-    }
   }
+
+  (*pc)++;
 }
 
 void CPU::setStatus(uint8_t bit)
@@ -555,10 +571,7 @@ void CPU::moveRegisterToRegister(uint8_t opCode)
 
   if (dst == REGISTER_M)
   {
-    if (src != REGISTER_M)
-    {
       memory[currentMemoryAddress()] = *registerMap[src];
-    }
   }
   else if (src == REGISTER_M)
   {
@@ -755,10 +768,8 @@ void CPU::exchangeRegistersAndMemory()
 void CPU::handle3ByteOp(uint8_t **pc)
 {
   uint8_t opCode = **pc;
-  (*pc)++;
-  uint8_t lowBytes = **pc;
-  (*pc)++;
-  uint8_t highBytes = **pc;
+  uint8_t lowBytes = *(*pc + 1);
+  uint8_t highBytes = *(*pc + 2);
   uint16_t bytes = highBytes << 8 | lowBytes;
 
   switch (opCode)
@@ -789,6 +800,8 @@ void CPU::handle3ByteOp(uint8_t **pc)
       throw UnhandledOpCodeException(opCode);
       break;  
   }
+
+  (*pc) += 3;
 }
 
 void CPU::replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes)
@@ -800,8 +813,7 @@ void CPU::replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8
 void CPU::handle2ByteOp(uint8_t **pc)
 {
   uint8_t opCode = **pc;
-  (*pc)++;
-  uint8_t value = **pc;
+  uint8_t value = *(*(pc) + 1);
 
   switch (opCode)
   {
@@ -845,4 +857,6 @@ void CPU::handle2ByteOp(uint8_t **pc)
       throw UnhandledOpCodeException(opCode);
       break;  
   }
+
+  (*pc) += 2;
 }
