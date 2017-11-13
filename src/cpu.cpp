@@ -380,6 +380,10 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case LXI_D:
       case LXI_H:
       case LXI_SP:
+      case STA:
+      case LDA:
+      case SHLD:
+      case LXLD:
         handle3ByteOp(&pc);
         break;  
       case MVI_B:
@@ -755,6 +759,7 @@ void CPU::handle3ByteOp(uint8_t **pc)
   uint8_t lowBytes = **pc;
   (*pc)++;
   uint8_t highBytes = **pc;
+  uint16_t bytes = highBytes << 8 | lowBytes;
 
   switch (opCode)
   {
@@ -764,7 +769,21 @@ void CPU::handle3ByteOp(uint8_t **pc)
       replaceRegisterPair(registerPairFromOpCode(opCode), highBytes, lowBytes);
       break;
     case LXI_SP:
-      stackPointer = highBytes << 8 | lowBytes;
+      stackPointer = bytes;
+      break;
+    case STA:
+      memory[bytes] = registerA;
+      break;
+    case LDA:
+      registerA = memory[bytes];
+      break;
+    case SHLD:
+      memory[bytes] = registerL;
+      memory[bytes + 1] = registerH;
+      break;
+    case LXLD:
+      registerL = memory[bytes];
+      registerH = memory[bytes + 1];
       break;
     default:
       throw UnhandledOpCodeException(opCode);
