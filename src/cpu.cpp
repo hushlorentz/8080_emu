@@ -264,10 +264,10 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case SBB_H:
       case SBB_L:
       case SBB_A:
-        subtractValueFromAccumulator(registerValueFromOpCode(*pc) + 1);
+        subtractValueFromAccumulator(registerValueFromOpCode(*pc) + (carryBitSet() ? 1 : 0));
         break;
       case SBB_M:
-        subtractValueFromAccumulator(registerM() + 1);
+        subtractValueFromAccumulator(registerM() + (carryBitSet() ? 1 : 0));
         break;
       case ANA_B:
       case ANA_C:
@@ -375,6 +375,30 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
         break;
       case SPHL:
         stackPointer = registerH << 8 | registerL;
+        break;
+      case LXI_B:
+      case LXI_D:
+      case LXI_H:
+      case LXI_SP:
+        handle3ByteOp(&pc);
+        break;  
+      case MVI_B:
+      case MVI_C:
+      case MVI_D:
+      case MVI_E:
+      case MVI_H:
+      case MVI_L:  
+      case MVI_M:  
+      case MVI_A:  
+      case ADI:
+      case ACI:
+      case SUI:
+      case SBI:
+      case ANI:
+      case XRI:
+      case ORI:
+      case CPI:
+        handle2ByteOp(&pc);  
         break;
       default:
         throw UnhandledOpCodeException(*pc);
@@ -722,4 +746,84 @@ void CPU::exchangeRegistersAndMemory()
   registerH = memory[stackPointer + 1];
   memory[stackPointer] = tempHighBits;
   memory[stackPointer + 1] = tempLowBits;
+}
+
+void CPU::handle3ByteOp(uint8_t **pc)
+{
+  uint8_t opCode = **pc;
+  (*pc)++;
+  uint8_t lowBytes = **pc;
+  (*pc)++;
+  uint8_t highBytes = **pc;
+
+  switch (opCode)
+  {
+    case LXI_B:
+    case LXI_D:
+    case LXI_H:
+      replaceRegisterPair(registerPairFromOpCode(opCode), highBytes, lowBytes);
+      break;
+    case LXI_SP:
+      stackPointer = highBytes << 8 | lowBytes;
+      break;
+    default:
+      throw UnhandledOpCodeException(opCode);
+      break;  
+  }
+}
+
+void CPU::replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes)
+{
+  *(*pair)[0] = highBytes;
+  *(*pair)[1] = lowBytes;
+}
+
+void CPU::handle2ByteOp(uint8_t **pc)
+{
+  uint8_t opCode = **pc;
+  (*pc)++;
+  uint8_t value = **pc;
+
+  switch (opCode)
+  {
+    case MVI_B:
+    case MVI_C:
+    case MVI_D:
+    case MVI_E:
+    case MVI_H:
+    case MVI_L:
+    case MVI_A:
+      *(registerMap[opCode >> 3 & 7]) = value;
+      break;
+    case MVI_M:
+      memory[currentMemoryAddress()] = value;
+      break;
+    case ADI:
+      addValueToAccumulator(value, 0);
+      break;  
+    case ACI:
+      addValueToAccumulator(value, carryBitSet() ? 1 : 0);
+      break;  
+    case SUI:
+      subtractValueFromAccumulator(value);
+      break;
+    case SBI:
+      subtractValueFromAccumulator(value + (carryBitSet() ? 1 : 0));
+      break;
+    case ANI:
+      logicalANDWithAccumulator(value);
+      break;
+    case XRI:
+      logicalXORWithAccumulator(value);
+      break;
+    case ORI:
+      logicalORWithAccumulator(value);
+      break;
+    case CPI:
+      compareValueToAccumulator(value);  
+      break;
+    default:
+      throw UnhandledOpCodeException(opCode);
+      break;  
+  }
 }

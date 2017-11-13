@@ -60,7 +60,7 @@ class CPU
     void moveRegisterToRegister(uint8_t opCode);
     void moveMemoryToAccumulator(uint8_t upperBitsAddress, uint8_t lowerBitsAddress);
     void moveAccumulatorToMemory(uint8_t upperbitsAddress, uint8_t lowerBitsAddress);
-    void addValueToAccumulator(uint8_t opCode, uint8_t carry);
+    void addValueToAccumulator(uint8_t value, uint8_t carry);
     uint8_t registerValueFromOpCode(uint8_t opCode);
     void subtractValueFromAccumulator(uint8_t value);
     void logicalANDWithAccumulator(uint8_t value);
@@ -82,6 +82,9 @@ class CPU
     void decrementRegisterPair(vector<uint8_t *> * pair);
     void exchangeRegisterPairs(vector<uint8_t *> * p1, vector<uint8_t *> * p2);
     void exchangeRegistersAndMemory();
+    void handle3ByteOp(uint8_t **pc);
+    void replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes);
+    void handle2ByteOp(uint8_t **pc);
 };
 
 #endif
