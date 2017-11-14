@@ -13,6 +13,7 @@ class CPU
 {
   public:
     CPU();
+    bool followJumps;
     bool carryBitSet();
     bool parityBitSet();
     bool signBitSet();
@@ -31,6 +32,8 @@ class CPU
     uint16_t stackPointer;
     uint8_t status;
     uint8_t *programCounter;
+    uint8_t *programStart;
+    uint8_t *programEnd;
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
     vector<uint8_t *> registerPairH;
@@ -40,7 +43,7 @@ class CPU
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
 
   private:
-    void handleByteOp(uint8_t **pc);
+    void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);
     void flipStatusBit(uint8_t bit);
@@ -84,10 +87,11 @@ class CPU
     void decrementRegisterPair(vector<uint8_t *> * pair);
     void exchangeRegisterPairs(vector<uint8_t *> * p1, vector<uint8_t *> * p2);
     void exchangeRegistersAndMemory();
-    void handle3ByteOp(uint8_t **pc);
+    void handle3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
     void replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes);
-    void handle2ByteOp(uint8_t **pc);
-    void handleJumpOp(uint8_t **pc, uint8_t *programStart);
+    void handle2ByteOp(uint8_t opCode, uint8_t value);
+    uint8_t * handleJumpByteOp();
+    uint8_t * handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
 };
 
 #endif

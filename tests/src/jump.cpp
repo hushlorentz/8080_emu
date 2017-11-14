@@ -28,4 +28,148 @@ TEST_CASE("Testing jump op codes")
 
     REQUIRE(cpu.programCounter == program + (0x223b >> 3));
   }
+
+  SECTION("JC jumps if the carry bit is set")
+  {
+    uint8_t program[4] = { STC, JC, 0xe9, 0xa6 };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + (0xa6e9 >> 3));
+  }
+
+  SECTION("JC does not jump if the carry bit is not set")
+  {
+    uint8_t program[3] = { JC, 0xe9, 0xa6 };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + 3);
+  }
+
+  SECTION("JNC jumps if the carry bit is not set")
+  {
+    uint8_t program[3] = { JNC, 0xf4, 0x69 };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + (0x69f4 >> 3));
+  }
+
+  SECTION("JNC does not jump if the carry bit is set")
+  {
+    uint8_t program[4] = { STC, JNC, 0xff, 0xff };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + 4);
+  }
+
+  SECTION("JZ jumps if the zero bit is set")
+  {
+    uint8_t program[4] = { SBB_A, JZ, 0xaa, 0x11 };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + (0x11aa >> 3));
+  }
+
+  SECTION("JZ does not jump if the zero bit is not set")
+  {
+    uint8_t program[3] = { JZ, 0xff, 0xff };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + 3);
+  }
+
+  SECTION("JNZ jumps if the zero bit is not set")
+  {
+    uint8_t program[3] = { JNZ, 0x40, 0xd2 };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + (0xd240 >> 3));
+  }
+
+  SECTION("JNZ does not jump if the zero bit is set")
+  {
+    uint8_t program[4] = { SBB_A, JNZ, 0xff, 0xff };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + 4);
+  }
+
+  SECTION("JM jumps if the sign bit is set")
+  {
+    uint8_t program[4] = { DCR_A, JM, 0x30, 0x03 };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + (0x0330 >> 3));
+  }
+
+  SECTION("JM does not jump if the sign bit is not set")
+  {
+    uint8_t program[3] = { JM, 0xff, 0xff };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + 3);
+  }
+
+  SECTION("JP jumps if the sign bit is not set")
+  {
+    uint8_t program[3] = { JP, 0xff, 0xff };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + (0xffff >> 3));
+  }
+
+  SECTION("JP does not jump if the sign bit is set")
+  {
+    uint8_t program[4] = { DCR_A, JP, 0xff, 0xff };
+
+    cpu.processProgram(program, 4);
+
+    REQUIRE(cpu.programCounter == program + 4);
+  }
+
+  SECTION("JPE jumps if the parity bit is set")
+  {
+    uint8_t program[6] = { INR_B, INR_B, INR_B, JPE, 0xad, 0xde };
+
+    cpu.processProgram(program, 6);
+
+    REQUIRE(cpu.programCounter == program + (0xdead >> 3));
+  }
+
+  SECTION("JPE does not jump if the parity bit is not set")
+  {
+    uint8_t program[3] = { JPE, 0xff, 0xff };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + 3);
+  }
+
+  SECTION("JPO jumps if the parity bit is not set")
+  {
+    uint8_t program[3] = { JPO, 0x34, 0x09 };
+
+    cpu.processProgram(program, 3);
+
+    REQUIRE(cpu.programCounter == program + (0x0934 >> 3));
+  }
+
+  SECTION("JPO does not jump if the parity bit is set")
+  {
+    uint8_t program[6] = { INR_D, INR_D, INR_D, JPO, 0xff, 0xff };
+
+    cpu.processProgram(program, 6);
+
+    REQUIRE(cpu.programCounter == program + 6);
+  }
 }
