@@ -30,6 +30,7 @@ class CPU
     uint8_t registerM();
     uint16_t stackPointer;
     uint8_t status;
+    uint8_t *programCounter;
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
     vector<uint8_t *> registerPairH;
@@ -86,6 +87,7 @@ class CPU
     void handle3ByteOp(uint8_t **pc);
     void replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes);
     void handle2ByteOp(uint8_t **pc);
+    void handleJumpOp(uint8_t **pc, uint8_t *programStart);
 };
 
 #endif

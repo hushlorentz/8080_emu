@@ -23,7 +23,7 @@ using namespace std;
 #define REGISTER_PAIR_H 2
 #define REGISTER_PAIR_A 3
 
-CPU::CPU() : registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(0), status(0x02)
+CPU::CPU() : registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(0), status(0x02), programCounter(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -77,11 +77,11 @@ bool CPU::auxiliaryCarryBitSet()
 
 void CPU::processProgram(uint8_t *program, uint16_t programSize)
 {
-  uint8_t *pc = program;
+  programCounter = program;
 
-  while (pc < program + programSize)
+  while (programCounter < program + programSize)
   {
-    switch (*pc)
+    switch (*programCounter)
     {
       case LXI_B:
       case LXI_D:
@@ -91,7 +91,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case LDA:
       case SHLD:
       case LXLD:
-        handle3ByteOp(&pc);
+        handle3ByteOp(&programCounter);
         break;  
       case MVI_B:
       case MVI_C:
@@ -109,10 +109,14 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case XRI:
       case ORI:
       case CPI:
-        handle2ByteOp(&pc);  
+        handle2ByteOp(&programCounter);  
+        break;
+      case PCHL:
+      case JMP:
+        handleJumpOp(&programCounter, program);
         break;
       default:
-        handleByteOp(&pc);
+        handleByteOp(&programCounter);
         break;
     }
   }
@@ -859,4 +863,23 @@ void CPU::handle2ByteOp(uint8_t **pc)
   }
 
   (*pc) += 2;
+}
+
+void CPU::handleJumpOp(uint8_t **pc, uint8_t *programStart)
+{
+  switch (*programCounter)
+  {
+    case PCHL:
+      {
+        uint16_t address = (registerH << 8 | registerL) >> 3;
+        (*pc) = programStart + address;
+        break;
+      }
+    case JMP:
+      {
+        uint16_t bytes = *(programCounter + 2) << 8 | *(programCounter + 1);
+        programCounter = programStart + (bytes >> 3);
+        break;
+      }
+  }
 }

@@ -27,6 +27,12 @@ TEST_CASE("Running all the opcodes")
     cpu.processProgram(twoByteOpProgram, 2 * NUM_3BYTE_OP_CODES);
 
 
+    //const uint8_t NUM_JUMP_OP_CODES = 1;
+    //uint8_t jumpOpProgram[NUM_JUMP_OP_CODES] = { PCHL };
+    //cpu.processProgram(jumpOpProgram, NUM_JUMP_OP_CODES);
+    //also add JMP
+
+
     REQUIRE(1 == 1);
   }
 }

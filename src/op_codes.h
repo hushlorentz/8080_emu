@@ -184,12 +184,14 @@
 #define CMP_M 0xbe
 #define CMP_A 0xbf
 #define POP_B 0xc1
+#define JMP 0xc3
 #define PUSH_B 0xc5
 #define ADI 0xc6
 #define ACI 0xce
 #define POP_D 0xd1
 #define PUSH_D 0xd5
 #define SUI 0xd6
+#define PCHL 0xd9
 #define SBI 0xde
 #define POP_H 0xe1
 #define XTHL 0xe3
