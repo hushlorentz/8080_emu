@@ -92,6 +92,8 @@ class CPU
     void handle2ByteOp(uint8_t opCode, uint8_t value);
     uint8_t * handleJumpByteOp();
     uint8_t * handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
+    uint8_t * handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
+    void push2ByteValueOnStack(uint16_t value);
 };
 
 #endif

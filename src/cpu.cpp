@@ -23,7 +23,7 @@ using namespace std;
 #define REGISTER_PAIR_H 2
 #define REGISTER_PAIR_A 3
 
-CPU::CPU() : followJumps(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(0), status(0x02), programCounter(0), programStart(0), programEnd(0)
+CPU::CPU() : followJumps(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer((uint16_t)MAX_MEMORY), status(0x02), programCounter(0), programStart(0), programEnd(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -128,6 +128,9 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case JPE:
       case JPO:
         programCounter = followJumps ? handleJump3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
+        break;
+      case CALL:
+        programCounter = followJumps ? handleCall3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
         break;
       default:
         handleByteOp(*programCounter);
@@ -459,7 +462,7 @@ void CPU::flipStatusBit(uint8_t bit)
 
 bool CPU::allClear()
 {
-  return status == 0x02 && stackPointer == 0 && registerB == 0 && registerC == 0 &&
+  return status == 0x02 && stackPointer == (uint16_t)MAX_MEMORY && registerB == 0 && registerC == 0 &&
     registerD == 0 && registerE == 0 && registerH == 0 &&
     registerL == 0 && registerA == 0;
 }
@@ -905,6 +908,29 @@ uint8_t * CPU::handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highB
       break;
     case JMP:
       jumpMemoryLocation += (bytes >> 3);
+      break;
+  }
+
+  return jumpMemoryLocation;
+}
+
+void CPU::push2ByteValueOnStack(uint16_t value)
+{
+  memory[stackPointer - 1] = value & 0xff;
+  memory[stackPointer - 2] = value >> 8;
+  stackPointer -= 2;
+}
+
+uint8_t * CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
+{
+  uint16_t bytes = highBytes << 8 | lowBytes;
+  uint8_t *jumpMemoryLocation = programStart;
+
+  switch (opCode)
+  {
+    case CALL:
+      push2ByteValueOnStack((programStart - programCounter) >> 3);
+      jumpMemoryLocation = followJumps ? programStart + (bytes >> 3) : programCounter + 3;
       break;
   }
 

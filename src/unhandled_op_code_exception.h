@@ -1,3 +1,6 @@
+#ifndef UNHANDLED_OP_CODE_EXCEPTION_H
+#define UNHANDLED_OP_CODE_EXCEPTION_H
+
 #include <exception>
 #include <string>
 
@@ -11,3 +14,5 @@ class UnhandledOpCodeException: public exception
   private:
     uint8_t opCode;
 };
+
+#endif

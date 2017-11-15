@@ -1,3 +1,6 @@
+#ifndef OP_CODES_H
+#define OP_CODES_H
+
 #define NOP 0x00
 #define LXI_B 0x01
 #define STAX_B 0x02
@@ -189,6 +192,7 @@
 #define PUSH_B 0xc5
 #define ADI 0xc6
 #define JZ 0xca
+#define CALL 0xcd
 #define ACI 0xce
 #define POP_D 0xd1
 #define JNC 0xd2
@@ -212,3 +216,5 @@
 #define SPHL 0xf9
 #define JM 0xfa
 #define CPI 0xfe
+
+#endif
