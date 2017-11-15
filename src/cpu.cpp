@@ -130,6 +130,14 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
         programCounter = followJumps ? handleJump3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
         break;
       case CALL:
+      case CC:
+      case CNC:
+      case CZ:
+      case CNZ:
+      case CM:
+      case CP:
+      case CPE:
+      case CPO:
         programCounter = followJumps ? handleCall3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
         break;
       default:
@@ -929,10 +937,39 @@ uint8_t * CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highB
   switch (opCode)
   {
     case CALL:
-      push2ByteValueOnStack((programStart - programCounter) >> 3);
-      jumpMemoryLocation = followJumps ? programStart + (bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = performCallOperation(bytes >> 3);
+      break;
+    case CC:
+      jumpMemoryLocation = carryBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CNC:
+      jumpMemoryLocation = !carryBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CZ:
+      jumpMemoryLocation = zeroBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CNZ:
+      jumpMemoryLocation = !zeroBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CM:
+      jumpMemoryLocation = signBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CP:
+      jumpMemoryLocation = !signBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CPE:
+      jumpMemoryLocation = parityBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      break;
+    case CPO:
+      jumpMemoryLocation = !parityBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
       break;
   }
 
   return jumpMemoryLocation;
+}
+
+uint8_t * CPU::performCallOperation(uint16_t memoryOffset)
+{
+    push2ByteValueOnStack((programStart - programCounter) >> 3);
+    return programStart + memoryOffset;
 }

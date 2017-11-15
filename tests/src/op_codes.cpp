@@ -17,8 +17,8 @@ TEST_CASE("Running all the opcodes")
 
     cpu.processProgram(program, NUM_OP_CODES);
 
-    const uint8_t NUM_3BYTE_OP_CODES = 18;
-    uint8_t threeByteOpProgram[NUM_3BYTE_OP_CODES * 3] = { LXI_B, 0, 0, LXI_D, 0, 0, LXI_H, 0, 0, LXI_SP, 0, 0, STA, 0, 0, LDA, 0, 0, SHLD, 0, 0, LXLD, 0, 0, JMP, 0, 0, JC, 0, 0, JNC, 0, 0, JZ, 0, 0, JNZ, 0, 0, JM, 0, 0, JP, 0, 0, JPE, 0, 0, JPO, 0, 0, CALL, 0, 0 };
+    const uint8_t NUM_3BYTE_OP_CODES = 24;
+    uint8_t threeByteOpProgram[NUM_3BYTE_OP_CODES * 3] = { LXI_B, 0, 0, LXI_D, 0, 0, LXI_H, 0, 0, LXI_SP, 0, 0, STA, 0, 0, LDA, 0, 0, SHLD, 0, 0, LXLD, 0, 0, JMP, 0, 0, JC, 0, 0, JNC, 0, 0, JZ, 0, 0, JNZ, 0, 0, JM, 0, 0, JP, 0, 0, JPE, 0, 0, JPO, 0, 0, CALL, 0, 0, CC, 0, 0, CNC, 0, 0, CNZ, 0, 0, CM, 0, 0, CPE, 0, 0, CPO, 0, 0 };
 
     cpu.processProgram(threeByteOpProgram, 3 * NUM_3BYTE_OP_CODES);
 

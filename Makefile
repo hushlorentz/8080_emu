@@ -30,7 +30,7 @@ $(TEST_OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	@ mkdir -p $(TEST_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/src/%.cpp
+$(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/src/%.cpp $(SRC_DIR)/cpu.cpp
 	@ mkdir -p $(TEST_OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 

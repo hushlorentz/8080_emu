@@ -191,15 +191,19 @@
 #define JMP 0xc3
 #define PUSH_B 0xc5
 #define ADI 0xc6
+#define CNZ 0xc8
 #define JZ 0xca
+#define CZ 0xcc
 #define CALL 0xcd
 #define ACI 0xce
 #define POP_D 0xd1
 #define JNC 0xd2
 #define PUSH_D 0xd5
 #define SUI 0xd6
+#define CNC 0xd8
 #define PCHL 0xd9
 #define JC 0xda
+#define CC 0xdc
 #define SBI 0xde
 #define JPE 0xea
 #define POP_H 0xe1
@@ -207,14 +211,18 @@
 #define XTHL 0xe3
 #define PUSH_H 0xe5
 #define ANI 0xe6
+#define CPO 0xe8
 #define XCHG 0xeb
+#define CPE 0xec
 #define XRI 0xee
 #define POP_PSW 0xf1
 #define JP 0xf2
 #define PUSH_PSW 0xf5
 #define ORI 0xf6
+#define CP 0xf8
 #define SPHL 0xf9
 #define JM 0xfa
+#define CM 0xfc
 #define CPI 0xfe
 
 #endif
