@@ -133,7 +133,7 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
 
     cpu.processProgram(program, 1);
 
-    REQUIRE(cpu.stackPointer == 0x0);
+    REQUIRE(cpu.stackPointer == 0x10000);
   }
 
   SECTION("A program can decrement a 16-bit register pair")
@@ -150,11 +150,11 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
   SECTION("A program can decrement the stack pointer")
   {
     uint8_t program[1] = { DCX_SP };
-    cpu.stackPointer = 0;
+    cpu.stackPointer = 1;
 
     cpu.processProgram(program, 1);
 
-    REQUIRE(cpu.stackPointer == 0xffff);
+    REQUIRE(cpu.stackPointer == 0x0);
   }
 
   SECTION("A program can exchange the DE and HL register pairs")

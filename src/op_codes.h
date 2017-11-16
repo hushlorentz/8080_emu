@@ -9,6 +9,7 @@
 #define DCR_B 0x05
 #define MVI_B 0x06
 #define RLC 0x07
+#define QUIT 0x08
 #define DAD_B 0x09
 #define LDX_B 0x0a
 #define DCX_B 0x0b
@@ -192,6 +193,7 @@
 #define PUSH_B 0xc5
 #define ADI 0xc6
 #define CNZ 0xc8
+#define RET 0xc9
 #define JZ 0xca
 #define CZ 0xcc
 #define CALL 0xcd

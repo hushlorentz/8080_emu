@@ -23,7 +23,7 @@ using namespace std;
 #define REGISTER_PAIR_H 2
 #define REGISTER_PAIR_A 3
 
-CPU::CPU() : followJumps(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer((uint16_t)MAX_MEMORY), status(0x02), programCounter(0)
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -80,7 +80,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
   programCounter = 0;
   memcpy(memory.data(), program, programSize);
 
-  while (programCounter < programSize)
+  while (programCounter < programSize && runProgram)
   {
     switch (memory[programCounter])
     {
@@ -138,6 +138,9 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CPE:
       case CPO:
         programCounter = followJumps ? handleCall3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
+        break;
+      case RET:
+        programCounter = followJumps ? handleReturnOp(memory[programCounter]) : programCounter + 1;
         break;
       default:
         handleByteOp(memory[programCounter]);
@@ -446,6 +449,9 @@ void CPU::handleByteOp(uint8_t opCode)
       case SPHL:
         stackPointer = registerH << 8 | registerL;
         break;
+      case QUIT:
+        runProgram = false;
+        break;
       default:
         throw UnhandledOpCodeException(opCode);
         break;  
@@ -469,7 +475,7 @@ void CPU::flipStatusBit(uint8_t bit)
 
 bool CPU::allClear()
 {
-  return status == 0x02 && stackPointer == (uint16_t)MAX_MEMORY && registerB == 0 && registerC == 0 &&
+  return status == 0x02 && stackPointer == MAX_MEMORY && registerB == 0 && registerC == 0 &&
     registerD == 0 && registerE == 0 && registerH == 0 &&
     registerL == 0 && registerA == 0;
 }
@@ -965,4 +971,27 @@ uint16_t CPU::performCallOperation(uint16_t memoryOffset)
 {
     push2ByteValueOnStack(programCounter + 3);
     return memoryOffset;
+}
+
+uint16_t CPU::handleReturnOp(uint8_t opCode)
+{
+  uint16_t jumpMemoryLocation = 0;
+
+  switch (opCode)
+  {
+    case RET:
+      jumpMemoryLocation = pop2ByteValueFromStack();
+      break;
+  }
+
+  return jumpMemoryLocation;
+}
+
+uint16_t CPU::pop2ByteValueFromStack()
+{
+  uint8_t lowBits = memory[stackPointer + 1];
+  uint8_t highBits = memory[stackPointer];
+  stackPointer += 2;
+
+  return highBits << 8 | lowBits;
 }

@@ -5,21 +5,19 @@
 
 using namespace Catch;
 
-TEST_CASE("Testing call op codes")
+TEST_CASE("Testing return op codes")
 {
   CPU cpu;
 
-  SECTION("A program can load a subroutine")
+  SECTION("A program can return from a subroutine")
   {
-    uint8_t program[3] = { CALL, 0x3b, 0x08 };
+    uint8_t program[8] = { CALL, 0x04, 0x00, QUIT, INR_B, INR_B, INR_B, RET };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 8);
 
-    uint8_t mem = cpu.memory[0xffff];
-
-    REQUIRE(cpu.programCounter == 0x083b);
-    REQUIRE(cpu.stackPointer == 0xfffe);
-    REQUIRE(mem == 3);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerB == 3);
+    REQUIRE(!cpu.runProgram);
   }
 
   SECTION("CC performs a call to a subroutine if the carry bit is set")

@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-const int MAX_MEMORY = 65536;
+const uint32_t MAX_MEMORY = 65536;
 
 using namespace std;
 
@@ -20,6 +20,7 @@ class CPU
     bool zeroBitSet();
     bool auxiliaryCarryBitSet();
     bool allClear();
+    bool runProgram;
     void processProgram(uint8_t *program, uint16_t programSize);
     uint8_t registerA;
     uint8_t registerB;
@@ -29,7 +30,7 @@ class CPU
     uint8_t registerH;
     uint8_t registerL;
     uint8_t registerM();
-    uint16_t stackPointer;
+    uint32_t stackPointer;
     uint8_t status;
     uint16_t programCounter;
     uint8_t *executingProgram;
@@ -94,6 +95,8 @@ class CPU
     uint16_t handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
     void push2ByteValueOnStack(uint16_t value);
     uint16_t performCallOperation(uint16_t memoryOffset);
+    uint16_t handleReturnOp(uint8_t opCode);
+    uint16_t pop2ByteValueFromStack();
 };
 
 #endif
