@@ -78,11 +78,11 @@ bool CPU::auxiliaryCarryBitSet()
 void CPU::processProgram(uint8_t *program, uint16_t programSize)
 {
   programCounter = 0;
-  executingProgram = program;
+  memcpy(memory.data(), program, programSize);
 
   while (programCounter < programSize)
   {
-    switch (executingProgram[programCounter])
+    switch (memory[programCounter])
     {
       case LXI_B:
       case LXI_D:
@@ -92,7 +92,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case LDA:
       case SHLD:
       case LXLD:
-        handle3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]);
+        handle3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]);
         programCounter += 3;
         break;  
       case MVI_B:
@@ -111,7 +111,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case XRI:
       case ORI:
       case CPI:
-        handle2ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1]);  
+        handle2ByteOp(memory[programCounter], memory[programCounter + 1]);  
         programCounter += 2;
         break;
       case PCHL:
@@ -126,7 +126,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case JP:
       case JPE:
       case JPO:
-        programCounter = followJumps ? handleJump3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]) : programCounter + 3;
+        programCounter = followJumps ? handleJump3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
         break;
       case CALL:
       case CC:
@@ -137,10 +137,10 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CP:
       case CPE:
       case CPO:
-        programCounter = followJumps ? handleCall3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]) : programCounter + 3;
+        programCounter = followJumps ? handleCall3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
         break;
       default:
-        handleByteOp(executingProgram[programCounter]);
+        handleByteOp(memory[programCounter]);
         programCounter++;
         break;
     }

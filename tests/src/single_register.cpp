@@ -90,6 +90,8 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   SECTION("Incrementing a 16-bit register once does not set the parity flag")
   {
     uint8_t program[1] = {INR_M};
+    cpu.registerH = 0xaa;
+    cpu.registerL = 0xaa;
 
     cpu.processProgram(program, 1);
     REQUIRE(!cpu.parityBitSet());
@@ -98,6 +100,8 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   SECTION("Incrementing a 16-bit register three times sets the parity flag")
   {
     uint8_t program[3] = {INR_M, INR_M, INR_M};
+    cpu.registerH = 0xaa;
+    cpu.registerL = 0xaa;
 
     cpu.processProgram(program, 3);
     REQUIRE(cpu.parityBitSet());
@@ -129,6 +133,8 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   SECTION("Incrementing register M and then decrementing it sets the zero flag")
   {
     uint8_t program[2] = {INR_M, DCR_M};
+    cpu.registerH = 0xee;
+    cpu.registerL = 0xee;
 
     cpu.processProgram(program, 2);
     REQUIRE(cpu.zeroBitSet());
@@ -182,7 +188,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
 
   SECTION("Incrementing register M containing 15 sets the auxiliary carry flag")
   {
-    cpu.memory[0] = 15;
+    cpu.registerH = 0xaa;
+    cpu.registerL = 0xaa;
+    cpu.memory[0xaaaa] = 15;
 
     uint8_t program[1] = {INR_M};
 

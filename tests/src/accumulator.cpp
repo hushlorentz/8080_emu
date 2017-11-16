@@ -103,7 +103,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     uint8_t initialValue = 0x6c;
     uint8_t value = 0x2e;
     cpu.registerA = initialValue;
-    cpu.memory[0] = value;
+    cpu.registerH = 0xbb;
+    cpu.registerL = 0xbb;
+    cpu.memory[0xbbbb] = value;
     
     cpu.processProgram(program, 1);
 
@@ -216,7 +218,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
   {
     uint8_t program[1] = { SUB_M };
     cpu.registerA = 0xcc;
-    cpu.memory[0] = 0xbb;
+    cpu.registerH = 0xaa;
+    cpu.registerL = 0xaa;
+    cpu.memory[0xaaaa] = 0xbb;
 
     cpu.processProgram(program, 1);
     REQUIRE(cpu.registerA == 0x11);
@@ -280,7 +284,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
   {
     uint8_t program[2] = { STC, ANA_M };
     cpu.registerA = 0xF6;
-    cpu.memory[0] = 0xF0;
+    cpu.registerH = 0xaa;
+    cpu.registerL = 0xaa;
+    cpu.memory[0xaaaa] = 0xF0;
 
     cpu.processProgram(program, 2);
 
@@ -306,7 +312,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
   {
     uint8_t program[2] = { STC, XRA_M };
     cpu.registerA = 0x06;
-    cpu.memory[0] = 0x60;
+    cpu.registerH = 0xcc;
+    cpu.registerL = 0xcc;
+    cpu.memory[0xcccc] = 0x60;
 
     cpu.processProgram(program, 2);
 
@@ -332,7 +340,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
   {
     uint8_t program[2] = { STC, ORA_M };
     cpu.registerA = 0x33;
-    cpu.memory[0] = 0x0F;
+    cpu.registerH = 0xff;
+    cpu.registerL = 0xff;
+    cpu.memory[0xffff] = 0x0F;
 
     cpu.processProgram(program, 2);
 

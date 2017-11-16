@@ -24,7 +24,9 @@ bool checkRegisterTransferToM(CPU *cpu, uint8_t *program, uint8_t *src)
 bool checkRegisterTransferFromM(CPU *cpu, uint8_t *program, uint8_t *dst)
 {
   uint8_t value = 0x20;
-  cpu->memory[0] = value;
+  cpu->registerH = 0xaa;
+  cpu->registerL = 0xaa;
+  cpu->memory[0xaaaa] = value;
   cpu->processProgram(program, 1);
   return *dst == value;
 }
