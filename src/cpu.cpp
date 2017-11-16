@@ -818,9 +818,6 @@ void CPU::handle3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
       registerL = memory[bytes];
       registerH = memory[bytes + 1];
       break;
-    default:
-      throw UnhandledOpCodeException(opCode);
-      break;  
   }
 }
 
@@ -870,9 +867,6 @@ void CPU::handle2ByteOp(uint8_t opCode, uint8_t value)
     case CPI:
       compareValueToAccumulator(value);  
       break;
-    default:
-      throw UnhandledOpCodeException(opCode);
-      break;  
   }
 }
 
