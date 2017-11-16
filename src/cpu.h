@@ -31,9 +31,8 @@ class CPU
     uint8_t registerM();
     uint16_t stackPointer;
     uint8_t status;
-    uint8_t *programCounter;
-    uint8_t *programStart;
-    uint8_t *programEnd;
+    uint16_t programCounter;
+    uint8_t *executingProgram;
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
     vector<uint8_t *> registerPairH;
@@ -90,11 +89,11 @@ class CPU
     void handle3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
     void replaceRegisterPair(vector<uint8_t *> * pair, uint8_t highBytes, uint8_t lowBytes);
     void handle2ByteOp(uint8_t opCode, uint8_t value);
-    uint8_t * handleJumpByteOp();
-    uint8_t * handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
-    uint8_t * handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
+    uint16_t handleJumpByteOp();
+    uint16_t handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
+    uint16_t handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes);
     void push2ByteValueOnStack(uint16_t value);
-    uint8_t * performCallOperation(uint16_t memoryOffset);
+    uint16_t performCallOperation(uint16_t memoryOffset);
 };
 
 #endif

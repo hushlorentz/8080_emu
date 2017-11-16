@@ -15,8 +15,9 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x083b >> 3));
+    REQUIRE(cpu.programCounter == 0x083b);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    //REQUIRE(program + (cpu.memory[0xfffe] >> 3) == (program + 3));
   }
 
   SECTION("CC performs a call to a subroutine if the carry bit is set")
@@ -25,7 +26,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + (0xe321 >> 3));
+    REQUIRE(cpu.programCounter == 0xe321);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -35,7 +36,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("CNC performs a call to a subroutine if the carry bit is not set")
@@ -44,7 +45,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x10aa >> 3));
+    REQUIRE(cpu.programCounter == 0x10aa);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -54,7 +55,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + 4);
+    REQUIRE(cpu.programCounter == 4);
   }
 
   SECTION("CZ performs a call to a subroutine if the zero bit is set")
@@ -63,7 +64,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 5);
 
-    REQUIRE(cpu.programCounter == program + (0xc204 >> 3));
+    REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -73,7 +74,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("CNZ performs a call to a subroutine if the zero bit is not set")
@@ -82,7 +83,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x9aa9 >> 3));
+    REQUIRE(cpu.programCounter == 0x9aa9);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -92,7 +93,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 5);
 
-    REQUIRE(cpu.programCounter == program + 5);
+    REQUIRE(cpu.programCounter == 5);
   }
 
   SECTION("CM performs a call to a subroutine if the sign bit is set")
@@ -101,7 +102,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + (0xabba >> 3));
+    REQUIRE(cpu.programCounter == 0xabba);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -111,7 +112,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("CP performs a call to a subroutine if the sign bit is not set")
@@ -120,7 +121,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0xcaca >> 3));
+    REQUIRE(cpu.programCounter == 0xcaca);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -130,7 +131,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + 4);
+    REQUIRE(cpu.programCounter == 4);
   }
 
   SECTION("CPE performs a call to a subroutine if the parity bit is set")
@@ -139,7 +140,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 6);
 
-    REQUIRE(cpu.programCounter == program + (0xb132 >> 3));
+    REQUIRE(cpu.programCounter == 0xb132);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -149,7 +150,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("CPO performs a call to a subroutine if the parity bit is not set")
@@ -158,7 +159,7 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0xc204 >> 3));
+    REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
   }
 
@@ -168,6 +169,6 @@ TEST_CASE("Testing call op codes")
 
     cpu.processProgram(program, 6);
 
-    REQUIRE(cpu.programCounter == program + 6);
+    REQUIRE(cpu.programCounter == 6);
   }
 }

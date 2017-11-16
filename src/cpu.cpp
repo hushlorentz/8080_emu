@@ -23,7 +23,7 @@ using namespace std;
 #define REGISTER_PAIR_H 2
 #define REGISTER_PAIR_A 3
 
-CPU::CPU() : followJumps(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer((uint16_t)MAX_MEMORY), status(0x02), programCounter(0), programStart(0), programEnd(0)
+CPU::CPU() : followJumps(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer((uint16_t)MAX_MEMORY), status(0x02), programCounter(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -77,13 +77,12 @@ bool CPU::auxiliaryCarryBitSet()
 
 void CPU::processProgram(uint8_t *program, uint16_t programSize)
 {
-  programCounter = program;
-  programStart = program;
-  programEnd = program + programSize;
+  programCounter = 0;
+  executingProgram = program;
 
-  while (programCounter < programEnd)
+  while (programCounter < programSize)
   {
-    switch (*programCounter)
+    switch (executingProgram[programCounter])
     {
       case LXI_B:
       case LXI_D:
@@ -93,7 +92,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case LDA:
       case SHLD:
       case LXLD:
-        handle3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2));
+        handle3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]);
         programCounter += 3;
         break;  
       case MVI_B:
@@ -112,7 +111,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case XRI:
       case ORI:
       case CPI:
-        handle2ByteOp(*programCounter, *(programCounter + 1));  
+        handle2ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1]);  
         programCounter += 2;
         break;
       case PCHL:
@@ -127,7 +126,7 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case JP:
       case JPE:
       case JPO:
-        programCounter = followJumps ? handleJump3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
+        programCounter = followJumps ? handleJump3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]) : programCounter + 3;
         break;
       case CALL:
       case CC:
@@ -138,10 +137,10 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
       case CP:
       case CPE:
       case CPO:
-        programCounter = followJumps ? handleCall3ByteOp(*programCounter, *(programCounter + 1), *(programCounter + 2)) : programCounter + 3;
+        programCounter = followJumps ? handleCall3ByteOp(executingProgram[programCounter], executingProgram[programCounter + 1], executingProgram[programCounter + 2]) : programCounter + 3;
         break;
       default:
-        handleByteOp(*programCounter);
+        handleByteOp(executingProgram[programCounter]);
         programCounter++;
         break;
     }
@@ -877,45 +876,45 @@ void CPU::handle2ByteOp(uint8_t opCode, uint8_t value)
   }
 }
 
-uint8_t * CPU::handleJumpByteOp()
+uint16_t CPU::handleJumpByteOp()
 {
-  uint16_t address = (registerH << 8 | registerL) >> 3;
-  return programStart + address;
+  uint16_t address = registerH << 8 | registerL;
+  return address;
 }
 
-uint8_t * CPU::handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
+uint16_t CPU::handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
 {
   uint16_t bytes = highBytes << 8 | lowBytes;
-  uint8_t *jumpMemoryLocation = programStart;
+  uint16_t jumpMemoryLocation = 0;
 
   switch (opCode)
   {
     case JC:
-      jumpMemoryLocation = carryBitSet() ? jumpMemoryLocation + (bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = carryBitSet() ? bytes : programCounter + 3;
       break;
     case JNC:
-      jumpMemoryLocation = carryBitSet() ? programCounter + 3 : jumpMemoryLocation + (bytes >> 3);
+      jumpMemoryLocation = carryBitSet() ? programCounter + 3 : bytes;
       break;
     case JZ:
-      jumpMemoryLocation = zeroBitSet() ? jumpMemoryLocation + (bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = zeroBitSet() ? bytes : programCounter + 3;
       break;
     case JNZ:
-      jumpMemoryLocation = zeroBitSet() ? programCounter + 3 : jumpMemoryLocation + (bytes >> 3);
+      jumpMemoryLocation = zeroBitSet() ? programCounter + 3 : bytes;
       break;
     case JM:
-      jumpMemoryLocation = signBitSet() ? jumpMemoryLocation + (bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = signBitSet() ? bytes : programCounter + 3;
       break;
     case JP:
-      jumpMemoryLocation = signBitSet() ? programCounter + 3 : jumpMemoryLocation + (bytes >> 3);
+      jumpMemoryLocation = signBitSet() ? programCounter + 3 : bytes;
       break;
     case JPE:
-      jumpMemoryLocation = parityBitSet() ? jumpMemoryLocation + (bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = parityBitSet() ? bytes : programCounter + 3;
       break;
     case JPO:
-      jumpMemoryLocation = parityBitSet() ? programCounter + 3 : jumpMemoryLocation + (bytes >> 3);
+      jumpMemoryLocation = parityBitSet() ? programCounter + 3 : bytes;
       break;
     case JMP:
-      jumpMemoryLocation += (bytes >> 3);
+      jumpMemoryLocation = bytes;
       break;
   }
 
@@ -929,47 +928,47 @@ void CPU::push2ByteValueOnStack(uint16_t value)
   stackPointer -= 2;
 }
 
-uint8_t * CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
+uint16_t CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
 {
   uint16_t bytes = highBytes << 8 | lowBytes;
-  uint8_t *jumpMemoryLocation = programStart;
+  uint16_t jumpMemoryLocation = 0;
 
   switch (opCode)
   {
     case CALL:
-      jumpMemoryLocation = performCallOperation(bytes >> 3);
+      jumpMemoryLocation = performCallOperation(bytes);
       break;
     case CC:
-      jumpMemoryLocation = carryBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = carryBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CNC:
-      jumpMemoryLocation = !carryBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = !carryBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CZ:
-      jumpMemoryLocation = zeroBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = zeroBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CNZ:
-      jumpMemoryLocation = !zeroBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = !zeroBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CM:
-      jumpMemoryLocation = signBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = signBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CP:
-      jumpMemoryLocation = !signBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = !signBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CPE:
-      jumpMemoryLocation = parityBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = parityBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
     case CPO:
-      jumpMemoryLocation = !parityBitSet() ? performCallOperation(bytes >> 3) : programCounter + 3;
+      jumpMemoryLocation = !parityBitSet() ? performCallOperation(bytes) : programCounter + 3;
       break;
   }
 
   return jumpMemoryLocation;
 }
 
-uint8_t * CPU::performCallOperation(uint16_t memoryOffset)
+uint16_t CPU::performCallOperation(uint16_t memoryOffset)
 {
-    push2ByteValueOnStack((programStart - programCounter) >> 3);
-    return programStart + memoryOffset;
+    push2ByteValueOnStack(programCounter + 3);
+    return memoryOffset;
 }

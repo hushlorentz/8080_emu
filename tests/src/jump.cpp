@@ -17,7 +17,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 1);
 
-    REQUIRE(cpu.programCounter == program + (0x721d >> 3));
+    REQUIRE(cpu.programCounter == 0x721d);
   }
 
   SECTION("A program can set the program counter to the value of the immediate data")
@@ -26,7 +26,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x223b >> 3));
+    REQUIRE(cpu.programCounter == 0x223b);
   }
 
   SECTION("JC jumps if the carry bit is set")
@@ -35,7 +35,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + (0xa6e9 >> 3));
+    REQUIRE(cpu.programCounter == 0xa6e9);
   }
 
   SECTION("JC does not jump if the carry bit is not set")
@@ -44,7 +44,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("JNC jumps if the carry bit is not set")
@@ -53,7 +53,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x69f4 >> 3));
+    REQUIRE(cpu.programCounter == 0x69f4);
   }
 
   SECTION("JNC does not jump if the carry bit is set")
@@ -62,7 +62,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + 4);
+    REQUIRE(cpu.programCounter == 4);
   }
 
   SECTION("JZ jumps if the zero bit is set")
@@ -71,7 +71,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + (0x11aa >> 3));
+    REQUIRE(cpu.programCounter == 0x11aa);
   }
 
   SECTION("JZ does not jump if the zero bit is not set")
@@ -80,7 +80,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("JNZ jumps if the zero bit is not set")
@@ -89,7 +89,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0xd240 >> 3));
+    REQUIRE(cpu.programCounter == 0xd240);
   }
 
   SECTION("JNZ does not jump if the zero bit is set")
@@ -98,7 +98,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + 4);
+    REQUIRE(cpu.programCounter == 4);
   }
 
   SECTION("JM jumps if the sign bit is set")
@@ -107,7 +107,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + (0x0330 >> 3));
+    REQUIRE(cpu.programCounter == 0x0330);
   }
 
   SECTION("JM does not jump if the sign bit is not set")
@@ -116,7 +116,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("JP jumps if the sign bit is not set")
@@ -125,7 +125,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0xffff >> 3));
+    REQUIRE(cpu.programCounter == 0xffff);
   }
 
   SECTION("JP does not jump if the sign bit is set")
@@ -134,7 +134,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 4);
 
-    REQUIRE(cpu.programCounter == program + 4);
+    REQUIRE(cpu.programCounter == 4);
   }
 
   SECTION("JPE jumps if the parity bit is set")
@@ -143,7 +143,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 6);
 
-    REQUIRE(cpu.programCounter == program + (0xdead >> 3));
+    REQUIRE(cpu.programCounter == 0xdead);
   }
 
   SECTION("JPE does not jump if the parity bit is not set")
@@ -152,7 +152,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + 3);
+    REQUIRE(cpu.programCounter == 3);
   }
 
   SECTION("JPO jumps if the parity bit is not set")
@@ -161,7 +161,7 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 3);
 
-    REQUIRE(cpu.programCounter == program + (0x0934 >> 3));
+    REQUIRE(cpu.programCounter == 0x0934);
   }
 
   SECTION("JPO does not jump if the parity bit is set")
@@ -170,6 +170,6 @@ TEST_CASE("Testing jump op codes")
 
     cpu.processProgram(program, 6);
 
-    REQUIRE(cpu.programCounter == program + 6);
+    REQUIRE(cpu.programCounter == 6);
   }
 }
