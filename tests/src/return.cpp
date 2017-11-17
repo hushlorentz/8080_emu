@@ -20,155 +20,179 @@ TEST_CASE("Testing return op codes")
     REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CC performs a call to a subroutine if the carry bit is set")
+  SECTION("RC returns if the carry flag is set")
   {
-    uint8_t program[4] = { STC, CC, 0x21, 0xe3 };
+    uint8_t program[8] = { STC, CALL, 0x06, 0x00, INR_C, QUIT, INR_C, RC };
 
-    cpu.processProgram(program, 4);
+    cpu.processProgram(program, 8);
 
-    REQUIRE(cpu.programCounter == 0xe321);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerC == 2);
+    REQUIRE(!cpu.runProgram);
+  }
+
+  SECTION("RC does not return if the carry flag is not set")
+  {
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, INR_C, RC };
+
+    cpu.processProgram(program, 7);
+
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerC == 1);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CC does not perform a call to a subroutine if the carry bit is not set")
+  SECTION("RNC performs a return if the carry bit is not set")
   {
-    uint8_t program[3] = { CC, 0x21, 0xe3 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, INR_D, RNC };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 3);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerD == 2);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CNC performs a call to a subroutine if the carry bit is not set")
+  SECTION("RNC does not perform a return if the carry bit is set")
   {
-    uint8_t program[3] = { CNC, 0xaa, 0x10 };
+    uint8_t program[8] = { STC, CALL, 0x06, 0x00, INR_D, QUIT, INR_D, RNC };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 8);
 
-    REQUIRE(cpu.programCounter == 0x10aa);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerD == 1);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CNC does not perform a call to a subroutine if the carry bit is set")
+  SECTION("RZ performs a return if the zero bit is set")
   {
-    uint8_t program[4] = { STC, CNC, 0x21, 0xe3 };
+    uint8_t program[8] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, DCR_E, RZ };
 
-    cpu.processProgram(program, 4);
+    cpu.processProgram(program, 8);
 
-    REQUIRE(cpu.programCounter == 4);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerE == 1);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CZ performs a call to a subroutine if the zero bit is set")
+  SECTION("RZ does not perform a return if the zero bit is not set")
   {
-    uint8_t program[5] = { INR_C, DCR_C, CZ, 0x04, 0xc2 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, RZ };
 
-    cpu.processProgram(program, 5);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerE == 1);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CZ does not perform a call to a subroutine if the zero bit is not set")
+  SECTION("RNZ performs a return if the zero bit is not set")
   {
-    uint8_t program[3] = { CZ, 0x21, 0xe3 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_B, QUIT, INR_B, RNZ };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 3);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerB == 2);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CNZ performs a call to a subroutine if the zero bit is not set")
+  SECTION("RNZ does not perform a return if the zero bit is set")
   {
-    uint8_t program[3] = { CNZ, 0xa9, 0x9a };
+    uint8_t program[8] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, DCR_E, RNZ };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 8);
 
-    REQUIRE(cpu.programCounter == 0x9aa9);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerE == 0);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CNZ does not perform a call to a subroutine if the zero bit is set")
+  SECTION("RM performs a return if the sign bit is set")
   {
-    uint8_t program[5] = { INR_C, DCR_C, CNZ, 0x04, 0xc2 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, DCR_C, RM };
 
-    cpu.processProgram(program, 5);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 5);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerC == 0);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CM performs a call to a subroutine if the sign bit is set")
+  SECTION("RM does not perform a return if the sign bit is not set")
   {
-    uint8_t program[4] = { DCR_E, CM, 0xba, 0xab };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, INR_C, RM };
 
-    cpu.processProgram(program, 4);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 0xabba);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerC == 1);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CM does not perform a call to a subroutine if the sign bit is not set")
+  SECTION("RP performs a return if the sign bit is not set")
   {
-    uint8_t program[3] = { CM, 0x04, 0xc2 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, INR_D, RP };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 3);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerD == 2);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CP performs a call to a subroutine if the sign bit is not set")
+  SECTION("RP does not perform a return if the sign bit is set")
   {
-    uint8_t program[3] = { CP, 0xca, 0xca };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, DCR_D, RP };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 0xcaca);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerD == 0xff);
+    REQUIRE(cpu.runProgram);
   }
 
-  SECTION("CP does not perform a call to a subroutine if the sign bit is set")
+  SECTION("RPE performs a return if the parity bit is set")
   {
-    uint8_t program[4] = { DCR_H, CP, 0x04, 0xc2 };
+    uint8_t program[9] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, INR_E, INR_E, RPE };
 
-    cpu.processProgram(program, 4);
+    cpu.processProgram(program, 9);
 
-    REQUIRE(cpu.programCounter == 4);
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerE == 4);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CPE performs a call to a subroutine if the parity bit is set")
+  SECTION("RPE does not perform a return if the parity bit is not set")
   {
-    uint8_t program[6] = { INR_L, INR_L, INR_L, CPE, 0x32, 0xb1 };
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, RPE };
 
-    cpu.processProgram(program, 6);
+    cpu.processProgram(program, 7);
 
-    REQUIRE(cpu.programCounter == 0xb132);
     REQUIRE(cpu.stackPointer == 0xfffe);
+    REQUIRE(cpu.registerE == 0x01);
+    REQUIRE(cpu.runProgram);
+ }
+
+  SECTION("RPO performs a return if the parity bit is not set")
+  {
+    uint8_t program[7] = { CALL, 0x05, 0x00, INR_B, QUIT, INR_B, RPO };
+
+    cpu.processProgram(program, 7);
+
+    REQUIRE(cpu.stackPointer == 0x10000);
+    REQUIRE(cpu.registerB == 0x02);
+    REQUIRE(!cpu.runProgram);
   }
 
-  SECTION("CPE does not perform a call to a subroutine if the parity bit is not set")
+  SECTION("RPO does not perform a return if the parity bit is set")
   {
-    uint8_t program[3] = { CPE, 0x04, 0xc2 };
+    uint8_t program[9] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, INR_E, INR_E, RPO };
 
-    cpu.processProgram(program, 3);
+    cpu.processProgram(program, 9);
 
-    REQUIRE(cpu.programCounter == 3);
-  }
-
-  SECTION("CPO performs a call to a subroutine if the parity bit is not set")
-  {
-    uint8_t program[3] = { CPO, 0x04, 0xc2 };
-
-    cpu.processProgram(program, 3);
-
-    REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
-  }
-
-  SECTION("CPO does not perform a call to a subroutine if the parity bit is set")
-  {
-    uint8_t program[6] = { INR_L, INR_L, INR_L, CPO, 0x32, 0xb1 };
-
-    cpu.processProgram(program, 6);
-
-    REQUIRE(cpu.programCounter == 6);
+    REQUIRE(cpu.registerE == 3);
+    REQUIRE(cpu.runProgram);
   }
 }

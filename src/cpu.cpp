@@ -140,6 +140,14 @@ void CPU::processProgram(uint8_t *program, uint16_t programSize)
         programCounter = followJumps ? handleCall3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
         break;
       case RET:
+      case RC:
+      case RNC:
+      case RZ:
+      case RNZ:
+      case RM:
+      case RP:
+      case RPE:
+      case RPO:
         programCounter = followJumps ? handleReturnOp(memory[programCounter]) : programCounter + 1;
         break;
       default:
@@ -981,6 +989,30 @@ uint16_t CPU::handleReturnOp(uint8_t opCode)
   {
     case RET:
       jumpMemoryLocation = pop2ByteValueFromStack();
+      break;
+    case RC:
+      jumpMemoryLocation = carryBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RNC:
+      jumpMemoryLocation = !carryBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RZ:
+      jumpMemoryLocation = zeroBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RNZ:
+      jumpMemoryLocation = !zeroBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RM:
+      jumpMemoryLocation = signBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RP:
+      jumpMemoryLocation = !signBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RPE:
+      jumpMemoryLocation = parityBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      break;
+    case RPO:
+      jumpMemoryLocation = !parityBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
       break;
   }
 
