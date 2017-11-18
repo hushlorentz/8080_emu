@@ -17,7 +17,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == value + initialValue);
   }
@@ -30,7 +31,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == value + initialValue);
     REQUIRE(!cpu.zeroBitSet());
@@ -48,7 +50,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == value + initialValue);
     REQUIRE(cpu.zeroBitSet());
@@ -62,7 +65,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == (uint8_t)(value + initialValue));
     REQUIRE(cpu.zeroBitSet());
@@ -76,7 +80,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == (uint8_t)(value + initialValue));
     REQUIRE(cpu.signBitSet());
@@ -90,7 +95,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = initialValue;
     cpu.registerB = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == (uint8_t)(initialValue + value));
     REQUIRE(cpu.carryBitSet());
@@ -107,7 +113,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0xbb;
     cpu.memory[0xbbbb] = value;
     
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == value + initialValue);
     REQUIRE(!cpu.zeroBitSet());
@@ -128,7 +135,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0x06;
     cpu.memory[0x0506] = 0x07;
     
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 2 * (cpu.registerB + cpu.registerC + cpu.registerD + cpu.registerE + cpu.registerH + cpu.registerL + cpu.memory[0x0506]));
   }
@@ -139,7 +147,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x42;
     cpu.registerD = 0x3d;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x80);
     REQUIRE(!cpu.zeroBitSet());
@@ -155,7 +164,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x42;
     cpu.registerD = 0x3d;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x7f);
   }
@@ -166,7 +176,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x0d;
     cpu.registerH = 0x08;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0x05);
   }
 
@@ -176,7 +188,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x05;
     cpu.registerB = 0x0a;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == (uint8_t)-5);
     REQUIRE(cpu.signBitSet());
   }
@@ -187,7 +201,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x05;
     cpu.registerD = 0x64;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == (uint8_t)(0x05 - 0x64));
     REQUIRE(cpu.carryBitSet());
   }
@@ -198,7 +214,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x3e;
     cpu.registerL = 0x3e;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0);
     REQUIRE(!cpu.carryBitSet());
   }
@@ -209,7 +227,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x06;
     cpu.registerC = 0x06;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0);
     REQUIRE(cpu.zeroBitSet());
   }
@@ -222,7 +242,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0xaa;
     cpu.memory[0xaaaa] = 0xbb;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0x11);
   }
 
@@ -231,7 +253,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     uint8_t program[1] = { SUB_A };
     cpu.registerA = 0xcc;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0);
     REQUIRE(cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -250,7 +274,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.memory[0x0506] = 0x7;
     uint8_t expectedResult = 0xff - (0x1 + 0x2 + 0x3 + 0x4 + 0x5 + 0x6 + 0x7);
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == expectedResult);
   }
 
@@ -260,7 +286,9 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x04;
     cpu.registerL = 0x02;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0x01);
     REQUIRE(!cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -275,7 +303,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x66;
     cpu.registerD = 0x06;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x06);
   }
@@ -288,7 +317,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0xaa;
     cpu.memory[0xaaaa] = 0xF0;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0xF0);
     REQUIRE(!cpu.carryBitSet());
@@ -303,7 +333,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0x66;
     cpu.registerE = 0x66;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x0);
   }
@@ -316,7 +347,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0xcc;
     cpu.memory[0xcccc] = 0x60;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x66);
     REQUIRE(!cpu.carryBitSet());
@@ -331,7 +363,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0xab;
     cpu.registerL = 0x11;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0xbb);
   }
@@ -344,7 +377,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerL = 0xff;
     cpu.memory[0xffff] = 0x0F;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x3F);
     REQUIRE(!cpu.carryBitSet());
@@ -359,7 +393,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0xb5;
     cpu.registerH = 0xb5;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -371,7 +406,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = -0x1b;
     cpu.registerB = -0x05;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(!cpu.zeroBitSet());
     REQUIRE(cpu.carryBitSet());
@@ -383,7 +419,8 @@ TEST_CASE("The CPU handles operations in the accumulator with operands from the 
     cpu.registerA = 0xff;
     cpu.memory[0] = 0xfe;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
     
     REQUIRE(!cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());

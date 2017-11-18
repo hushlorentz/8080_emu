@@ -23,7 +23,10 @@ using namespace std;
 #define REGISTER_PAIR_H 2
 #define REGISTER_PAIR_A 3
 
-CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0)
+#define MAX_MEMORY 65536
+#define NO_INTERRUPT 0xff
+
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -75,86 +78,96 @@ bool CPU::auxiliaryCarryBitSet()
   return hasFlag(status, AUXILIARY_CARRY_BIT);
 }
 
-void CPU::processProgram(uint8_t *program, uint16_t programSize)
+void CPU::loadProgram(uint8_t *program, uint16_t programSize)
 {
   programCounter = 0;
+  programLength = programSize;
   memcpy(memory.data(), program, programSize);
+}
 
-  while (programCounter < programSize && runProgram)
+void CPU::processProgram()
+{
+  do
   {
-    switch (memory[programCounter])
-    {
-      case LXI_B:
-      case LXI_D:
-      case LXI_H:
-      case LXI_SP:
-      case STA:
-      case LDA:
-      case SHLD:
-      case LXLD:
-        handle3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]);
-        programCounter += 3;
-        break;  
-      case MVI_B:
-      case MVI_C:
-      case MVI_D:
-      case MVI_E:
-      case MVI_H:
-      case MVI_L:  
-      case MVI_M:  
-      case MVI_A:  
-      case ADI:
-      case ACI:
-      case SUI:
-      case SBI:
-      case ANI:
-      case XRI:
-      case ORI:
-      case CPI:
-        handle2ByteOp(memory[programCounter], memory[programCounter + 1]);  
-        programCounter += 2;
-        break;
-      case PCHL:
-        programCounter = followJumps ? handleJumpByteOp() : programCounter + 1;
-        break;
-      case JC:
-      case JNC:
-      case JZ:
-      case JNZ:
-      case JMP:
-      case JM:
-      case JP:
-      case JPE:
-      case JPO:
-        programCounter = followJumps ? handleJump3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
-        break;
-      case CALL:
-      case CC:
-      case CNC:
-      case CZ:
-      case CNZ:
-      case CM:
-      case CP:
-      case CPE:
-      case CPO:
-        programCounter = followJumps ? handleCall3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
-        break;
-      case RET:
-      case RC:
-      case RNC:
-      case RZ:
-      case RNZ:
-      case RM:
-      case RP:
-      case RPE:
-      case RPO:
-        programCounter = followJumps ? handleReturnOp(memory[programCounter]) : programCounter + 1;
-        break;
-      default:
-        handleByteOp(memory[programCounter]);
-        programCounter++;
-        break;
-    }
+    handleNextInstruction();
+  }
+  while (programCounter < programLength && runProgram && !stepThrough);
+}
+
+void CPU::handleNextInstruction()
+{
+  switch (memory[programCounter])
+  {
+    case LXI_B:
+    case LXI_D:
+    case LXI_H:
+    case LXI_SP:
+    case STA:
+    case LDA:
+    case SHLD:
+    case LXLD:
+      handle3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]);
+      programCounter += 3;
+      break;  
+    case MVI_B:
+    case MVI_C:
+    case MVI_D:
+    case MVI_E:
+    case MVI_H:
+    case MVI_L:  
+    case MVI_M:  
+    case MVI_A:  
+    case ADI:
+    case ACI:
+    case SUI:
+    case SBI:
+    case ANI:
+    case XRI:
+    case ORI:
+    case CPI:
+      handle2ByteOp(memory[programCounter], memory[programCounter + 1]);  
+      programCounter += 2;
+      break;
+    case PCHL:
+      programCounter = followJumps ? handleJumpByteOp() : programCounter + 1;
+      break;
+    case JC:
+    case JNC:
+    case JZ:
+    case JNZ:
+    case JMP:
+    case JM:
+    case JP:
+    case JPE:
+    case JPO:
+      programCounter = followJumps ? handleJump3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
+      break;
+    case CALL:
+    case CC:
+    case CNC:
+    case CZ:
+    case CNZ:
+    case CM:
+    case CP:
+    case CPE:
+    case CPO:
+      programCounter = followJumps ? handleCall3ByteOp(memory[programCounter], memory[programCounter + 1], memory[programCounter + 2]) : programCounter + 3;
+      break;
+    case RET:
+    case RC:
+    case RNC:
+    case RZ:
+    case RNZ:
+    case RM:
+    case RP:
+    case RPE:
+    case RPO:
+      programCounter = followJumps ? handleReturnOp(memory[programCounter]) : programCounter + 1;
+      break;
+    default:
+      handleByteOp(memory[programCounter]);
+      programCounter++;
+      break;
   }
 }
 
@@ -1026,4 +1039,10 @@ uint16_t CPU::pop2ByteValueFromStack()
   stackPointer += 2;
 
   return highBits << 8 | lowBits;
+}
+
+void CPU::handleInterrupt(uint8_t opCode)
+{
+  push2ByteValueOnStack(programCounter);
+  interruptToHandle = opCode & 0x3f;
 }

@@ -17,7 +17,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerC = 0x15;
     cpu.stackPointer = 0xbbaa;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.memory[0xbbaa - 0x0001] == cpu.registerB);
     REQUIRE(cpu.memory[0xbbaa - 0x0002] == cpu.registerC);
@@ -29,7 +30,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerA = 0xf5;
     cpu.stackPointer = 0x0045;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.memory[0x0045 - 0x0001] == cpu.registerA);
     REQUIRE(cpu.memory[0x0045 - 0x0002] == cpu.status);
@@ -42,7 +44,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.memory[0x09] = 0x11;
     cpu.stackPointer = 0x09;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerD == 0xe5);
     REQUIRE(cpu.registerE == 0x11);
@@ -55,7 +58,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.memory[0x19] = 0xff;
     cpu.stackPointer = 0x19;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0xff);
     REQUIRE(cpu.status == 0xd7);
@@ -77,7 +81,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     uint16_t DEValue = cpu.registerD << 8 | cpu.registerE;
     uint16_t sum = HLValue + DEValue;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(sum == 0xd51a);
     REQUIRE((cpu.registerH << 8 | cpu.registerL) == sum);
@@ -94,7 +99,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     uint16_t BCValue = cpu.registerB << 8 | cpu.registerC;
     uint16_t sum = HLValue + BCValue;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
     REQUIRE((cpu.registerH << 8 | cpu.registerL) == sum);
@@ -109,7 +115,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     uint16_t HLValue = cpu.registerH << 8 | cpu.registerL;
     uint16_t sum = HLValue + cpu.stackPointer;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
     REQUIRE((cpu.registerH << 8 | cpu.registerL) == sum);
@@ -121,7 +128,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerH = 0x0;
     cpu.registerL = 0xff;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE((cpu.registerH << 8 | cpu.registerL) == 0x0100);
   }
@@ -131,7 +139,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     uint8_t program[1] = { INX_SP };
     cpu.stackPointer = 0xffff;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
   }
@@ -142,7 +151,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerD = 0xee;
     cpu.registerE = 0xdd;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE((cpu.registerD << 8 | cpu.registerE) == 0xeedc);
   }
@@ -152,7 +162,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     uint8_t program[1] = { DCX_SP };
     cpu.stackPointer = 1;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x0);
   }
@@ -165,7 +176,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerH = 0x00;
     cpu.registerL = 0xff;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerD == 0x00);
     REQUIRE(cpu.registerE == 0xff);
@@ -182,7 +194,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.memory[0x10ad] = 0x51;
     cpu.memory[0x10ae] = 0x67;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerH == 0x67);
     REQUIRE(cpu.registerL == 0x51);
@@ -196,7 +209,8 @@ TEST_CASE("The CPU handles opcodes for operations on register pairs correctly")
     cpu.registerH = 0x33;
     cpu.registerL = 0x44;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x3344);
   }

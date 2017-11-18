@@ -9,7 +9,8 @@ bool checkRegisterTransfer(CPU *cpu, uint8_t *program, uint8_t *src, uint8_t *ds
 {
   uint8_t value = 0x20;
   *src = value;
-  cpu->processProgram(program, 1);
+  cpu->loadProgram(program, 1);
+  cpu->processProgram();
   return *dst == value;
 }
 
@@ -17,7 +18,8 @@ bool checkRegisterTransferToM(CPU *cpu, uint8_t *program, uint8_t *src)
 {
   uint8_t value = 0x20;
   *src = value;
-  cpu->processProgram(program, 1);
+  cpu->loadProgram(program, 1);
+  cpu->processProgram();
   return cpu->registerM() == value;
 }
 
@@ -27,7 +29,8 @@ bool checkRegisterTransferFromM(CPU *cpu, uint8_t *program, uint8_t *dst)
   cpu->registerH = 0xaa;
   cpu->registerL = 0xaa;
   cpu->memory[0xaaaa] = value;
-  cpu->processProgram(program, 1);
+  cpu->loadProgram(program, 1);
+  cpu->processProgram();
   return *dst == value;
 }
 
@@ -132,7 +135,8 @@ TEST_CASE("The CPU handles data transfer correctly")
     cpu.memory[0xAA] = value;
     cpu.registerL = 0xAA;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerM() == value);
   }
@@ -145,7 +149,9 @@ TEST_CASE("The CPU handles data transfer correctly")
     cpu.registerC = 0xF0;
     cpu.memory[0x0AF0] = value;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == value);
   }
 
@@ -157,7 +163,9 @@ TEST_CASE("The CPU handles data transfer correctly")
     cpu.registerE = 0x0F;
     cpu.memory[0xA00F] = value;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == value);
   }
 
@@ -169,7 +177,9 @@ TEST_CASE("The CPU handles data transfer correctly")
     cpu.registerC = 0x55;
     cpu.registerA = value;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.memory[0x0C55] == value);
   }
 
@@ -181,7 +191,9 @@ TEST_CASE("The CPU handles data transfer correctly")
     cpu.registerE = 0x49;
     cpu.registerA = value;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.memory[0xB149] == value);
   }
 }

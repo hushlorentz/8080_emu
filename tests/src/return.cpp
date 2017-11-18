@@ -13,7 +13,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[8] = { CALL, 0x04, 0x00, QUIT, INR_B, INR_B, INR_B, RET };
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerB == 3);
@@ -24,7 +25,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[8] = { STC, CALL, 0x06, 0x00, INR_C, QUIT, INR_C, RC };
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerC == 2);
@@ -35,7 +37,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, INR_C, RC };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerC == 1);
@@ -46,7 +49,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, INR_D, RNC };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerD == 2);
@@ -57,7 +61,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[8] = { STC, CALL, 0x06, 0x00, INR_D, QUIT, INR_D, RNC };
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerD == 1);
@@ -68,7 +73,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[8] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, DCR_E, RZ };
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerE == 1);
@@ -79,7 +85,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, RZ };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerE == 1);
@@ -90,7 +97,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_B, QUIT, INR_B, RNZ };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerB == 2);
@@ -101,7 +109,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[8] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, DCR_E, RNZ };
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerE == 0);
@@ -112,7 +121,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, DCR_C, RM };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerC == 0);
@@ -123,7 +133,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_C, QUIT, INR_C, RM };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerC == 1);
@@ -134,7 +145,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, INR_D, RP };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerD == 2);
@@ -145,7 +157,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_D, QUIT, DCR_D, RP };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerD == 0xff);
@@ -156,7 +169,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[9] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, INR_E, INR_E, RPE };
 
-    cpu.processProgram(program, 9);
+    cpu.loadProgram(program, 9);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerE == 4);
@@ -167,7 +181,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, RPE };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerE == 0x01);
@@ -178,7 +193,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[7] = { CALL, 0x05, 0x00, INR_B, QUIT, INR_B, RPO };
 
-    cpu.processProgram(program, 7);
+    cpu.loadProgram(program, 7);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x10000);
     REQUIRE(cpu.registerB == 0x02);
@@ -189,7 +205,8 @@ TEST_CASE("Testing return op codes")
   {
     uint8_t program[9] = { CALL, 0x05, 0x00, INR_E, QUIT, INR_E, INR_E, INR_E, RPO };
 
-    cpu.processProgram(program, 9);
+    cpu.loadProgram(program, 9);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0xfffe);
     REQUIRE(cpu.registerE == 3);

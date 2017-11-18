@@ -15,7 +15,8 @@ TEST_CASE("The CPU handles opcodes for operations with direct memory instruction
     uint8_t program[3] = { STA, 0xff, 0xaa };
     cpu.registerA = 0x93;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.memory[0xaaff] == 0x93);
   }
@@ -25,7 +26,8 @@ TEST_CASE("The CPU handles opcodes for operations with direct memory instruction
     uint8_t program[3] = { LDA, 0xff, 0xaa };
     cpu.memory[0xaaff] = 0x93;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x93);
   }
@@ -36,7 +38,8 @@ TEST_CASE("The CPU handles opcodes for operations with direct memory instruction
     cpu.registerH = 0xae;
     cpu.registerL = 0x29;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.memory[0x8124] == 0x29);
     REQUIRE(cpu.memory[0x8125] == 0xae);
@@ -48,7 +51,8 @@ TEST_CASE("The CPU handles opcodes for operations with direct memory instruction
     cpu.memory[0x1001] = 0x05;
     cpu.memory[0x1002] = 0xe2;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerH == 0xe2);
     REQUIRE(cpu.registerL == 0x05);

@@ -193,6 +193,7 @@
 #define JMP 0xc3
 #define PUSH_B 0xc5
 #define ADI 0xc6
+#define RST_0 0xc7
 #define CNZ 0xc4
 #define RZ 0xc8
 #define RET 0xc9

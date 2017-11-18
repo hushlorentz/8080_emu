@@ -14,7 +14,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
   {
     uint8_t program[3] = { LXI_B, 0xff, 0xaa };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerB == 0xaa);
     REQUIRE(cpu.registerC == 0xff);
@@ -24,7 +25,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
   {
     uint8_t program[3] = { LXI_SP, 0x01, 0x10 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.stackPointer == 0x1001);
   }
@@ -33,7 +35,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
   {
     uint8_t program[2] = { MVI_E, 0xa5 };
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerE == 0xa5);
   }
@@ -44,7 +47,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     cpu.registerH = 0x77;
     cpu.registerL = 0x19;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.memory[0x7719] == 0x6c);
   }
@@ -54,7 +58,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { ADI, 0x73 };
     cpu.registerA = 0x22;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
     
     REQUIRE(cpu.registerA == 0x95);
   }
@@ -64,7 +69,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[3] = { STC, ACI, 0x73 };
     cpu.registerA = 0x22;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
     
     REQUIRE(cpu.registerA == 0x96);
   }
@@ -74,7 +80,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { SUI, 0x44 };
     cpu.registerA = 0x55;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
     
     REQUIRE(cpu.registerA == 0x11);
   }
@@ -84,7 +91,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[3] = { STC, SBI, 0x01 };
     cpu.registerA = 0x00;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
     
     REQUIRE(cpu.registerA == 0xfe);
     REQUIRE(cpu.carryBitSet());
@@ -99,7 +107,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { ANI, 0x0f };
     cpu.registerA = 0x3a;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0x0a);
   }
@@ -109,7 +118,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { XRI, 0x81 };
     cpu.registerA = 0x3b;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0xba);
   }
@@ -119,7 +129,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { ORI, 0x0f };
     cpu.registerA = 0xb5;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.registerA == 0xbf);
   }
@@ -129,7 +140,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { CPI, 0x40 };
     cpu.registerA = 0x4a;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(!cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -140,7 +152,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { CPI, 0x4a };
     cpu.registerA = 0x4a;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(cpu.zeroBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -151,7 +164,8 @@ TEST_CASE("The CPU handles opcodes for operations with immediate instructions")
     uint8_t program[2] = { CPI, 0x55 };
     cpu.registerA = 0x4a;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(!cpu.zeroBitSet());
     REQUIRE(cpu.carryBitSet());

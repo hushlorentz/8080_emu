@@ -5,8 +5,6 @@
 #include <map>
 #include <vector>
 
-const uint32_t MAX_MEMORY = 65536;
-
 using namespace std;
 
 class CPU
@@ -21,7 +19,8 @@ class CPU
     bool auxiliaryCarryBitSet();
     bool allClear();
     bool runProgram;
-    void processProgram(uint8_t *program, uint16_t programSize);
+    void loadProgram(uint8_t *program, uint16_t programSize);
+    void processProgram();
     uint8_t registerA;
     uint8_t registerB;
     uint8_t registerC;
@@ -33,6 +32,7 @@ class CPU
     uint32_t stackPointer;
     uint8_t status;
     uint16_t programCounter;
+    bool stepThrough;
     uint8_t *executingProgram;
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
@@ -41,8 +41,11 @@ class CPU
     vector<uint8_t> memory;
     map<uint8_t, uint8_t *> registerMap;
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
+    void handleInterrupt(uint8_t opCode);
 
   private:
+    uint8_t interruptToHandle;
+    uint16_t programLength;
     void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);
@@ -97,6 +100,7 @@ class CPU
     uint16_t performCallOperation(uint16_t memoryOffset);
     uint16_t handleReturnOp(uint8_t opCode);
     uint16_t pop2ByteValueFromStack();
+    void handleNextInstruction();
 };
 
 #endif

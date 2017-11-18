@@ -13,7 +13,8 @@ TEST_CASE("Testing operational opcodes")
   {
     uint8_t program[3] = { QUIT, INR_B, DCR_D };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.allClear());
   }

@@ -19,14 +19,16 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {0xFF};
 
-    REQUIRE_THROWS_WITH(cpu.processProgram(program, 1), Contains("Unhandled Op Code: 0xff"));
+    cpu.loadProgram(program, 1);
+    REQUIRE_THROWS_WITH(cpu.processProgram(), Contains("Unhandled Op Code: 0xff"));
   }
 
   SECTION("A program with only NOP, doesn't change the state of the CPU")
   {
     uint8_t program[1] = {NOP};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.allClear());
   }
@@ -35,7 +37,8 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {STC};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
   }
@@ -44,7 +47,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {CMC};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.carryBitSet());
   }
 
@@ -52,7 +57,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[2] = {CMC, CMC};
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(!cpu.carryBitSet());
   }
 
@@ -60,7 +67,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[8] = {INR_A, INR_B, INR_C, INR_D, INR_E, INR_H, INR_L, INR_M};
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 1);
     REQUIRE(cpu.registerB == 1);
     REQUIRE(cpu.registerC == 1);
@@ -75,7 +84,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {INR_B};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(!cpu.parityBitSet());
   }
 
@@ -83,7 +94,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[3] = {INR_B, INR_B, INR_B};
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
+
     REQUIRE(cpu.parityBitSet());
   }
 
@@ -93,7 +106,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     cpu.registerH = 0xaa;
     cpu.registerL = 0xaa;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(!cpu.parityBitSet());
   }
 
@@ -103,7 +118,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     cpu.registerH = 0xaa;
     cpu.registerL = 0xaa;
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
+
     REQUIRE(cpu.parityBitSet());
   }
 
@@ -111,7 +128,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[8] = {DCR_A, DCR_B, DCR_C, DCR_D, DCR_E, DCR_H, DCR_L, DCR_M};
 
-    cpu.processProgram(program, 8);
+    cpu.loadProgram(program, 8);
+    cpu.processProgram();
+
     REQUIRE((int8_t)cpu.registerA == -1);
     REQUIRE((int8_t)cpu.registerB == -1);
     REQUIRE((int8_t)cpu.registerC == -1);
@@ -126,7 +145,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[2] = {DCR_B, INR_B};
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(cpu.zeroBitSet());
   }
 
@@ -136,7 +157,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     cpu.registerH = 0xee;
     cpu.registerL = 0xee;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(cpu.zeroBitSet());
   }
 
@@ -144,7 +167,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {DCR_B};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.signBitSet());
   }
 
@@ -152,7 +177,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[2] = {DCR_B, INR_B};
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(!cpu.signBitSet());
   }
 
@@ -162,7 +189,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
 
     uint8_t program[1] = {INR_D};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(!cpu.auxiliaryCarryBitSet());
   }
 
@@ -172,7 +201,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
 
     uint8_t program[1] = {INR_D};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.auxiliaryCarryBitSet());
   }
 
@@ -182,7 +213,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
 
     uint8_t program[1] = {INR_M};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(!cpu.auxiliaryCarryBitSet());
   }
 
@@ -194,7 +227,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
 
     uint8_t program[1] = {INR_M};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.auxiliaryCarryBitSet());
   }
 
@@ -202,7 +237,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[1] = {CMA};
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE((int8_t)cpu.registerA == -1);
   }
 
@@ -211,7 +248,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     uint8_t program[1] = {DAA};
     cpu.registerA = 0;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0);
   }
 
@@ -221,7 +260,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     cpu.registerA = 10;
     REQUIRE(cpu.registerA == 10);
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 16);
     REQUIRE(cpu.auxiliaryCarryBitSet());
     REQUIRE(!cpu.carryBitSet());
@@ -232,7 +273,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     uint8_t program[1] = {DAA};
     cpu.registerA = 0x9B;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 1);
     REQUIRE(cpu.carryBitSet());
     REQUIRE(cpu.auxiliaryCarryBitSet());
@@ -242,7 +285,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
   {
     uint8_t program[2] = {STC, DAA};
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0x60);
     REQUIRE(!cpu.carryBitSet());
   }
@@ -252,7 +297,9 @@ TEST_CASE("The CPU handles all the OpCodes correctly")
     uint8_t program[2] = {INR_A, DAA};
     cpu.registerA = 0xF;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
+
     REQUIRE(cpu.registerA == 0x16);
     REQUIRE(!cpu.auxiliaryCarryBitSet());
   }

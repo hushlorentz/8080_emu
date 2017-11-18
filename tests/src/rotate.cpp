@@ -14,7 +14,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[1] = { RLC };
     cpu.registerA = 0xf2;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0xe5);
@@ -25,7 +26,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[1] = { RRC };
     cpu.registerA = 0xf2;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(!cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0x79);
@@ -36,7 +38,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[1] = { RAL };
     cpu.registerA = 0xb5;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0x6a);
@@ -47,7 +50,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[2] = { STC, RAL };
     cpu.registerA = 0x03;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(!cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0x07);
@@ -58,7 +62,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[1] = { RAR };
     cpu.registerA = 0x6b;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0x35);
@@ -69,7 +74,8 @@ TEST_CASE("The CPU handles operations that rotate the bits in the accumulator")
     uint8_t program[2] = { STC, RAR };
     cpu.registerA = 0x6a;
 
-    cpu.processProgram(program, 2);
+    cpu.loadProgram(program, 2);
+    cpu.processProgram();
 
     REQUIRE(!cpu.carryBitSet());
     REQUIRE(cpu.registerA == 0xb5);

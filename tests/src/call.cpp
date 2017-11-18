@@ -13,7 +13,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CALL, 0x3b, 0x08 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     uint8_t mem = cpu.memory[0xffff];
 
@@ -26,7 +27,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[4] = { STC, CC, 0x21, 0xe3 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xe321);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -36,7 +38,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CC, 0x21, 0xe3 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -45,7 +48,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CNC, 0xaa, 0x10 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x10aa);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -55,7 +59,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[4] = { STC, CNC, 0x21, 0xe3 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 4);
   }
@@ -64,7 +69,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[5] = { INR_C, DCR_C, CZ, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 5);
+    cpu.loadProgram(program, 5);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -74,7 +80,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CZ, 0x21, 0xe3 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -83,7 +90,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CNZ, 0xa9, 0x9a };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x9aa9);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -93,7 +101,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[5] = { INR_C, DCR_C, CNZ, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 5);
+    cpu.loadProgram(program, 5);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 5);
   }
@@ -102,7 +111,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[4] = { DCR_E, CM, 0xba, 0xab };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xabba);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -112,7 +122,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CM, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -121,7 +132,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CP, 0xca, 0xca };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xcaca);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -131,7 +143,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[4] = { DCR_H, CP, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 4);
   }
@@ -140,7 +153,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[6] = { INR_L, INR_L, INR_L, CPE, 0x32, 0xb1 };
 
-    cpu.processProgram(program, 6);
+    cpu.loadProgram(program, 6);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xb132);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -150,7 +164,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CPE, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -159,7 +174,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[3] = { CPO, 0x04, 0xc2 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xc204);
     REQUIRE(cpu.stackPointer == 0xfffe);
@@ -169,7 +185,8 @@ TEST_CASE("Testing call op codes")
   {
     uint8_t program[6] = { INR_L, INR_L, INR_L, CPO, 0x32, 0xb1 };
 
-    cpu.processProgram(program, 6);
+    cpu.loadProgram(program, 6);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 6);
   }

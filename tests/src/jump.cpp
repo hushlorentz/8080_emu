@@ -15,7 +15,8 @@ TEST_CASE("Testing jump op codes")
     cpu.registerH = 0x72;
     cpu.registerL = 0x1d;
 
-    cpu.processProgram(program, 1);
+    cpu.loadProgram(program, 1);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x721d);
   }
@@ -24,7 +25,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JMP, 0x3b, 0x22 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x223b);
   }
@@ -33,7 +35,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { STC, JC, 0xe9, 0xa6 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xa6e9);
   }
@@ -42,7 +45,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JC, 0xe9, 0xa6 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -51,7 +55,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JNC, 0xf4, 0x69 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x69f4);
   }
@@ -60,7 +65,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { STC, JNC, 0xff, 0xff };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 4);
   }
@@ -69,7 +75,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { SBB_A, JZ, 0xaa, 0x11 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x11aa);
   }
@@ -78,7 +85,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JZ, 0xff, 0xff };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -87,7 +95,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JNZ, 0x40, 0xd2 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xd240);
   }
@@ -96,7 +105,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { SBB_A, JNZ, 0xff, 0xff };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 4);
   }
@@ -105,7 +115,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { DCR_A, JM, 0x30, 0x03 };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x0330);
   }
@@ -114,7 +125,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JM, 0xff, 0xff };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -123,7 +135,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JP, 0xff, 0xff };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xffff);
   }
@@ -132,7 +145,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[4] = { DCR_A, JP, 0xff, 0xff };
 
-    cpu.processProgram(program, 4);
+    cpu.loadProgram(program, 4);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 4);
   }
@@ -141,7 +155,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[6] = { INR_B, INR_B, INR_B, JPE, 0xad, 0xde };
 
-    cpu.processProgram(program, 6);
+    cpu.loadProgram(program, 6);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0xdead);
   }
@@ -150,7 +165,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JPE, 0xff, 0xff };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 3);
   }
@@ -159,7 +175,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[3] = { JPO, 0x34, 0x09 };
 
-    cpu.processProgram(program, 3);
+    cpu.loadProgram(program, 3);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 0x0934);
   }
@@ -168,7 +185,8 @@ TEST_CASE("Testing jump op codes")
   {
     uint8_t program[6] = { INR_D, INR_D, INR_D, JPO, 0xff, 0xff };
 
-    cpu.processProgram(program, 6);
+    cpu.loadProgram(program, 6);
+    cpu.processProgram();
 
     REQUIRE(cpu.programCounter == 6);
   }
