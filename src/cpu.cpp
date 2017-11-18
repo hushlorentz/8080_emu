@@ -26,7 +26,7 @@ using namespace std;
 #define MAX_MEMORY 65536
 #define NO_INTERRUPT 0xff
 
-CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0)
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false)
 {
   memory.resize(MAX_MEMORY);
 
@@ -96,6 +96,11 @@ void CPU::processProgram()
 
 void CPU::handleNextInstruction()
 {
+  if (halt)
+  {
+    return;
+  }
+
   if (interruptToHandle != NO_INTERRUPT)
   {
     programCounter = interruptToHandle;
@@ -190,7 +195,6 @@ void CPU::handleByteOp(uint8_t opCode)
       case MOV_E_E:
       case MOV_H_H:
       case MOV_L_L:
-      case MOV_M_M:
       case MOV_A_A:
       case NOP:
         break;
@@ -478,6 +482,15 @@ void CPU::handleByteOp(uint8_t opCode)
         break;
       case SPHL:
         stackPointer = registerH << 8 | registerL;
+        break;
+      case DI:
+        ignoreInterrupts = true;
+        break;
+      case EI:
+        ignoreInterrupts = false;
+        break;
+      case HLT:
+        halt = true;
         break;
       default:
         throw UnhandledOpCodeException(opCode);
@@ -1049,6 +1062,12 @@ uint16_t CPU::pop2ByteValueFromStack()
 
 void CPU::handleInterrupt(uint8_t opCode)
 {
+  if (ignoreInterrupts)
+  {
+    return;
+  }
+
   push2ByteValueOnStack(programCounter);
   interruptToHandle = opCode & 0x38;
+  halt = false;
 }

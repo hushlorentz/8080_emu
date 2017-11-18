@@ -46,6 +46,8 @@ class CPU
   private:
     uint8_t interruptToHandle;
     uint16_t programLength;
+    bool ignoreInterrupts;
+    bool halt;
     void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);

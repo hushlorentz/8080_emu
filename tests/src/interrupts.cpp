@@ -163,4 +163,72 @@ TEST_CASE("Testing interrupt op codes")
     cpu.processProgram();
     REQUIRE(cpu.programCounter == 1);
   }
+
+  SECTION("A DI opcode makes the CPU ignore future interrupt requests")
+  {
+    uint8_t program[3] = { DI, NOP, QUIT };
+    cpu.memory[0x10] = INR_E;
+    cpu.memory[0x11] = RET;
+
+    cpu.stepThrough = true;
+    cpu.loadProgram(program, 3);
+
+    cpu.processProgram();
+    cpu.handleInterrupt(RST_2);
+
+    cpu.stepThrough = false;
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerE == 0);
+  }
+
+  SECTION("An EI opcode after a DI makes the CPU accept interrupt requests")
+  {
+    uint8_t program[3] = { DI, EI, QUIT };
+    cpu.memory[0x10] = INR_E;
+    cpu.memory[0x11] = RET;
+
+    cpu.stepThrough = true;
+    cpu.loadProgram(program, 3);
+
+    cpu.processProgram();
+    cpu.processProgram();
+    cpu.handleInterrupt(RST_2);
+
+    cpu.stepThrough = false;
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerE == 1);
+  }
+
+  SECTION("A HLT opcode makes the CPU wait until an interrupt is processed")
+  {
+    uint8_t program[4] = { NOP, HLT, INR_A, QUIT };
+    cpu.memory[0x10] = RET;
+
+    cpu.stepThrough = true;
+    cpu.loadProgram(program, 4);
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0);
+   
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0);
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0);
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0);
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0);
+
+    cpu.handleInterrupt(RST_2);
+
+    cpu.stepThrough = false;
+
+    cpu.processProgram();
+    REQUIRE(cpu.registerA == 0x1);
+  }
 }

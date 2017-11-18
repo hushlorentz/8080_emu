@@ -113,7 +113,7 @@
 #define MOV_M_E 0x73
 #define MOV_M_H 0x74
 #define MOV_M_L 0x75
-#define MOV_M_M 0x76
+#define HLT 0x76
 #define MOV_M_A 0x77
 #define MOV_A_B 0x78
 #define MOV_A_C 0x79
@@ -232,6 +232,7 @@
 #define RP 0xf0
 #define POP_PSW 0xf1
 #define JP 0xf2
+#define DI 0xf3
 #define CP 0xf4
 #define PUSH_PSW 0xf5
 #define ORI 0xf6
@@ -239,6 +240,7 @@
 #define RM 0xf8
 #define SPHL 0xf9
 #define JM 0xfa
+#define EI 0xfb
 #define CM 0xfc
 #define CPI 0xfe
 #define RST_7 0xff

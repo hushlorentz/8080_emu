@@ -128,19 +128,6 @@ TEST_CASE("The CPU handles data transfer correctly")
     REQUIRE(checkRegisterTransferToM(&cpu, program, &cpu.registerB));
   }
  
-  SECTION("A program can transfer register M to itself")
-  {
-    uint8_t program[1] = { MOV_M_M };
-    uint8_t value = 0x55;
-    cpu.memory[0xAA] = value;
-    cpu.registerL = 0xAA;
-
-    cpu.loadProgram(program, 1);
-    cpu.processProgram();
-
-    REQUIRE(cpu.registerM() == value);
-  }
-
   SECTION("A program can store the memory location addressed by registers BC in the accumulator")
   {
     uint8_t program[1] = { LDX_B };
