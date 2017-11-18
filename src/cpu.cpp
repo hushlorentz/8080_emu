@@ -96,6 +96,12 @@ void CPU::processProgram()
 
 void CPU::handleNextInstruction()
 {
+  if (interruptToHandle != NO_INTERRUPT)
+  {
+    programCounter = interruptToHandle;
+    interruptToHandle = NO_INTERRUPT;
+  }
+
   switch (memory[programCounter])
   {
     case LXI_B:
@@ -163,6 +169,9 @@ void CPU::handleNextInstruction()
     case RPE:
     case RPO:
       programCounter = followJumps ? handleReturnOp(memory[programCounter]) : programCounter + 1;
+      break;
+    case QUIT:
+      runProgram = false;
       break;
     default:
       handleByteOp(memory[programCounter]);
@@ -469,9 +478,6 @@ void CPU::handleByteOp(uint8_t opCode)
         break;
       case SPHL:
         stackPointer = registerH << 8 | registerL;
-        break;
-      case QUIT:
-        runProgram = false;
         break;
       default:
         throw UnhandledOpCodeException(opCode);
@@ -1044,5 +1050,5 @@ uint16_t CPU::pop2ByteValueFromStack()
 void CPU::handleInterrupt(uint8_t opCode)
 {
   push2ByteValueOnStack(programCounter);
-  interruptToHandle = opCode & 0x3f;
+  interruptToHandle = opCode & 0x38;
 }
