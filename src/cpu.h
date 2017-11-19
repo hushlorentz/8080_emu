@@ -34,6 +34,8 @@ class CPU
     uint16_t programCounter;
     bool stepThrough;
     uint8_t *executingProgram;
+    uint8_t (*inputPortHandler)(uint8_t);
+    void (*outputPortHandler)(uint8_t, uint8_t);
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
     vector<uint8_t *> registerPairH;
@@ -42,6 +44,8 @@ class CPU
     map<uint8_t, uint8_t *> registerMap;
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
     void handleInterrupt(uint8_t opCode);
+    void setInputPortHandler(uint8_t (*inputPortHandler)(uint8_t));
+    void setOutputPortHandler(void (*outputPortHandler)(uint8_t, uint8_t));
 
   private:
     uint8_t interruptToHandle;
@@ -103,6 +107,8 @@ class CPU
     uint16_t handleReturnOp(uint8_t opCode);
     uint16_t pop2ByteValueFromStack();
     void handleNextInstruction();
+    void handleInputFromPort(uint8_t portAddress);
+    void handleOutputToPort(uint8_t portAddress);
 };
 
 #endif

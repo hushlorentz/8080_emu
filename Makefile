@@ -8,7 +8,7 @@ TEST_DIR = tests
 TEST_OBJ_DIR = $(TEST_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, bit_ops.o cpu.o io.o unhandled_op_code_exception.o)
 TEST_OBJ = $(addprefix $(TEST_OBJ_DIR)/, bit_ops.o cpu.o io.o unhandled_op_code_exception.o)
-TEST_SPECIFIC_OBJ = $(addprefix $(TEST_OBJ_DIR)/, accumulator.o bit_operations.o bootstrap.o call.o data_transfer.o direct.o immediate.o interrupts.o jump.o operations.o op_codes.o pair_register.o return.o rotate.o single_register.o step.o)
+TEST_SPECIFIC_OBJ = $(addprefix $(TEST_OBJ_DIR)/, accumulator.o bit_operations.o bootstrap.o call.o data_transfer.o direct.o immediate.o interrupts.o input_output.o jump.o operations.o op_codes.o pair_register.o return.o rotate.o single_register.o step.o)
 
 $(EXE): $(OBJ) $(OBJ_DIR)/main.o
 	$(CC) $(CFLAGS) $^ -o $@

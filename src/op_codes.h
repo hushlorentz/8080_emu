@@ -205,6 +205,7 @@
 #define RNC 0xd0
 #define POP_D 0xd1
 #define JNC 0xd2
+#define OUT 0xd3
 #define CNC 0xd4
 #define PUSH_D 0xd5
 #define SUI 0xd6
@@ -212,6 +213,7 @@
 #define RC 0xd8
 #define PCHL 0xd9
 #define JC 0xda
+#define IN 0xdb
 #define CC 0xdc
 #define SBI 0xde
 #define RST_3 0xdf

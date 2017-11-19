@@ -26,7 +26,7 @@ using namespace std;
 #define MAX_MEMORY 65536
 #define NO_INTERRUPT 0xff
 
-CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false)
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), inputPortHandler(0), outputPortHandler(0), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false)
 {
   memory.resize(MAX_MEMORY);
 
@@ -107,6 +107,8 @@ void CPU::handleNextInstruction()
     interruptToHandle = NO_INTERRUPT;
   }
 
+  //cout << "OpCode: " << hex << (int)memory[programCounter] << endl;
+
   switch (memory[programCounter])
   {
     case LXI_B:
@@ -136,6 +138,8 @@ void CPU::handleNextInstruction()
     case XRI:
     case ORI:
     case CPI:
+    case IN:
+    case OUT:
       handle2ByteOp(memory[programCounter], memory[programCounter + 1]);  
       programCounter += 2;
       break;
@@ -913,6 +917,12 @@ void CPU::handle2ByteOp(uint8_t opCode, uint8_t value)
     case CPI:
       compareValueToAccumulator(value);  
       break;
+    case IN:
+      handleInputFromPort(memory[programCounter + 1]);
+      break;
+    case OUT:
+      handleOutputToPort(memory[programCounter + 1]);
+      break;
   }
 }
 
@@ -1070,4 +1080,34 @@ void CPU::handleInterrupt(uint8_t opCode)
   push2ByteValueOnStack(programCounter);
   interruptToHandle = opCode & 0x38;
   halt = false;
+}
+
+void CPU::setInputPortHandler(uint8_t (*inputPortHandlerFunc)(uint8_t))
+{
+  inputPortHandler = inputPortHandlerFunc;
+}
+
+void CPU::setOutputPortHandler(void (*outputPortHandlerFunc)(uint8_t, uint8_t))
+{
+  outputPortHandler = outputPortHandlerFunc;
+}
+
+void CPU::handleInputFromPort(uint8_t portAddress)
+{
+  if (!inputPortHandler)
+  {
+    throw runtime_error("No input port handler attached!");
+  }
+
+  registerA = inputPortHandler(portAddress);
+}
+
+void CPU::handleOutputToPort(uint8_t portAddress)
+{
+  if (!outputPortHandler)
+  {
+    throw runtime_error("No output port handler attached!");
+  }
+
+  outputPortHandler(portAddress, registerA);
 }
