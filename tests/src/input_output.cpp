@@ -2,30 +2,37 @@
 
 #include "../../src/cpu.h"
 #include "../../src/op_codes.h"
+#include "../../src/port_handler.h"
 
 using namespace Catch;
 
-uint8_t byteFromOutput = 0;
-
-uint8_t inputPortController(uint8_t portAddress)
+class MockPortHandler : public PortHandler
 {
-  return portAddress;
-}
+  public:
+    uint8_t value;
 
-void outputPortController(uint8_t portAddress, uint8_t value)
-{
-  byteFromOutput = value;
-}
+    virtual uint8_t inputPortHandler(uint8_t portAddress)
+    {
+      return portAddress;
+    }
+
+    virtual uint8_t outputPortHandler(uint8_t portAddress, uint8_t value)
+    {
+      this->value = value;
+      return 3;
+    }
+};
 
 TEST_CASE("Testing input / output op codes")
 {
   CPU cpu;
+  MockPortHandler portHandler;
 
   SECTION("An exeternal function can write bytes to register A")
   {
     uint8_t program[2] = { IN, 0xab };
 
-    cpu.setInputPortHandler(&inputPortController);
+    cpu.setPortHandler(&portHandler);
     cpu.loadProgram(program, 2);
 
     cpu.processProgram();
@@ -46,12 +53,12 @@ TEST_CASE("Testing input / output op codes")
   {
     uint8_t program[4] = { INR_A, INR_A, OUT, 0 };
 
-    cpu.setOutputPortHandler(&outputPortController);
+    cpu.setPortHandler(&portHandler);
     cpu.loadProgram(program, 4);
 
     cpu.processProgram();
 
-    REQUIRE(byteFromOutput == cpu.registerA);
+    REQUIRE(portHandler.value == cpu.registerA);
   }
 
   SECTION("An exception is thrown if no output port handler is hooked up")

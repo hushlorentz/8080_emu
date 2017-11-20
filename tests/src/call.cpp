@@ -16,7 +16,7 @@ TEST_CASE("Testing call op codes")
     cpu.loadProgram(program, 3);
     cpu.processProgram();
 
-    uint8_t mem = cpu.memory[0xffff];
+    uint8_t mem = cpu.memory[0xfffe];
 
     REQUIRE(cpu.programCounter == 0x083b);
     REQUIRE(cpu.stackPointer == 0xfffe);

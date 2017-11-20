@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "port_handler.h"
 #include <cstdint>
 #include <map>
 #include <vector>
@@ -20,7 +21,7 @@ class CPU
     bool allClear();
     bool runProgram;
     void loadProgram(uint8_t *program, uint16_t programSize);
-    void processProgram();
+    uint8_t processProgram();
     uint8_t registerA;
     uint8_t registerB;
     uint8_t registerC;
@@ -34,8 +35,6 @@ class CPU
     uint16_t programCounter;
     bool stepThrough;
     uint8_t *executingProgram;
-    uint8_t (*inputPortHandler)(uint8_t);
-    void (*outputPortHandler)(uint8_t, uint8_t);
     vector<uint8_t *> registerPairB;
     vector<uint8_t *> registerPairD;
     vector<uint8_t *> registerPairH;
@@ -44,14 +43,15 @@ class CPU
     map<uint8_t, uint8_t *> registerMap;
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
     void handleInterrupt(uint8_t opCode);
-    void setInputPortHandler(uint8_t (*inputPortHandler)(uint8_t));
-    void setOutputPortHandler(void (*outputPortHandler)(uint8_t, uint8_t));
+    void setPortHandler(PortHandler *handler);
 
   private:
     uint8_t interruptToHandle;
     uint16_t programLength;
     bool ignoreInterrupts;
     bool halt;
+    PortHandler *portHandler;
+    vector<uint8_t> lastThousand;
     void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);

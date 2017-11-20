@@ -26,7 +26,29 @@ using namespace std;
 #define MAX_MEMORY 65536
 #define NO_INTERRUPT 0xff
 
-CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), inputPortHandler(0), outputPortHandler(0), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false)
+unsigned char cycles[] = {
+	4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x00..0x0f
+	4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x10..0x1f
+	4, 10, 16, 5, 5, 5, 7, 4, 4, 10, 16, 5, 5, 5, 7, 4, //etc
+	4, 10, 13, 5, 10, 10, 10, 4, 4, 10, 13, 5, 5, 5, 7, 4,
+
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5, //0x40..0x4f
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+	7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 7, 5,
+
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4, //0x80..8x4f
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
+
+	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11, //0xc0..0xcf
+	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11,
+	11, 10, 10, 18, 17, 11, 7, 11, 11, 5, 10, 5, 17, 17, 7, 11,
+	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11,
+};
+
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false), portHandler(NULL)
 {
   memory.resize(MAX_MEMORY);
 
@@ -85,13 +107,17 @@ void CPU::loadProgram(uint8_t *program, uint16_t programSize)
   memcpy(memory.data(), program, programSize);
 }
 
-void CPU::processProgram()
+uint8_t CPU::processProgram()
 {
+  uint8_t instructionCycles = cycles[memory[programCounter]];
+
   do
   {
     handleNextInstruction();
   }
   while (programCounter < programLength && runProgram && !stepThrough);
+
+  return instructionCycles;
 }
 
 void CPU::handleNextInstruction()
@@ -105,9 +131,16 @@ void CPU::handleNextInstruction()
   {
     programCounter = interruptToHandle;
     interruptToHandle = NO_INTERRUPT;
+    ignoreInterrupts = false;
   }
 
   //cout << "OpCode: " << hex << (int)memory[programCounter] << endl;
+  lastThousand.push_back(memory[programCounter]);
+
+  if (lastThousand.size() > 1000)
+  {
+    lastThousand.erase(lastThousand.begin());
+  }
 
   switch (memory[programCounter])
   {
@@ -181,6 +214,16 @@ void CPU::handleNextInstruction()
       break;
     case QUIT:
       runProgram = false;
+      break;
+    case RST_0:
+    case RST_1:
+    case RST_2:
+    case RST_3:
+    case RST_4:
+    case RST_5:
+    case RST_6:
+    case RST_7:
+      handleInterrupt(memory[programCounter]);
       break;
     default:
       handleByteOp(memory[programCounter]);
@@ -497,6 +540,11 @@ void CPU::handleByteOp(uint8_t opCode)
         halt = true;
         break;
       default:
+        for (vector<uint8_t>::iterator it = lastThousand.begin(); it < lastThousand.end(); ++it)
+        {
+          printf("%02x ", (int)*it);
+        }
+        printf("\n");
         throw UnhandledOpCodeException(opCode);
         break;  
   }
@@ -973,8 +1021,8 @@ uint16_t CPU::handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBy
 
 void CPU::push2ByteValueOnStack(uint16_t value)
 {
-  memory[stackPointer - 1] = value & 0xff;
-  memory[stackPointer - 2] = value >> 8;
+  memory[stackPointer - 1] = value >> 8;
+  memory[stackPointer - 2] = value & 0xff;
   stackPointer -= 2;
 }
 
@@ -1019,8 +1067,8 @@ uint16_t CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBy
 
 uint16_t CPU::performCallOperation(uint16_t memoryOffset)
 {
-    push2ByteValueOnStack(programCounter + 3);
-    return memoryOffset;
+  push2ByteValueOnStack(programCounter + 3);
+  return memoryOffset;
 }
 
 uint16_t CPU::handleReturnOp(uint8_t opCode)
@@ -1063,8 +1111,8 @@ uint16_t CPU::handleReturnOp(uint8_t opCode)
 
 uint16_t CPU::pop2ByteValueFromStack()
 {
-  uint8_t lowBits = memory[stackPointer + 1];
-  uint8_t highBits = memory[stackPointer];
+  uint8_t highBits = memory[stackPointer + 1];
+  uint8_t lowBits = memory[stackPointer];
   stackPointer += 2;
 
   return highBits << 8 | lowBits;
@@ -1080,34 +1128,30 @@ void CPU::handleInterrupt(uint8_t opCode)
   push2ByteValueOnStack(programCounter);
   interruptToHandle = opCode & 0x38;
   halt = false;
+  ignoreInterrupts = true;
 }
 
-void CPU::setInputPortHandler(uint8_t (*inputPortHandlerFunc)(uint8_t))
+void CPU::setPortHandler(PortHandler *handler)
 {
-  inputPortHandler = inputPortHandlerFunc;
-}
-
-void CPU::setOutputPortHandler(void (*outputPortHandlerFunc)(uint8_t, uint8_t))
-{
-  outputPortHandler = outputPortHandlerFunc;
+  portHandler = handler;
 }
 
 void CPU::handleInputFromPort(uint8_t portAddress)
 {
-  if (!inputPortHandler)
+  if (!portHandler)
   {
     throw runtime_error("No input port handler attached!");
   }
 
-  registerA = inputPortHandler(portAddress);
+  registerA = portHandler->inputPortHandler(portAddress);
 }
 
 void CPU::handleOutputToPort(uint8_t portAddress)
 {
-  if (!outputPortHandler)
+  if (!portHandler)
   {
     throw runtime_error("No output port handler attached!");
   }
 
-  outputPortHandler(portAddress, registerA);
+  portHandler->outputPortHandler(portAddress, registerA);
 }

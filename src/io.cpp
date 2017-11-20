@@ -18,6 +18,7 @@ int openFile(string filePath, unsigned char *buffer, int bufferSize)
       return 1;
     }
   } else {
+    printf("Failed to open %s\n", buffer);
     return 1;
   }
 

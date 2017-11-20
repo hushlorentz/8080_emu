@@ -191,10 +191,10 @@
 #define POP_B 0xc1
 #define JNZ 0xc2
 #define JMP 0xc3
+#define CNZ 0xc4
 #define PUSH_B 0xc5
 #define ADI 0xc6
 #define RST_0 0xc7
-#define CNZ 0xc4
 #define RZ 0xc8
 #define RET 0xc9
 #define JZ 0xca
@@ -211,13 +211,11 @@
 #define SUI 0xd6
 #define RST_2 0xd7
 #define RC 0xd8
-#define PCHL 0xd9
 #define JC 0xda
 #define IN 0xdb
 #define CC 0xdc
 #define SBI 0xde
 #define RST_3 0xdf
-#define JPE 0xea
 #define RPO 0xe0
 #define POP_H 0xe1
 #define JPO 0xe2
@@ -227,6 +225,8 @@
 #define ANI 0xe6
 #define RST_4 0xe7
 #define RPE 0xe8
+#define PCHL 0xe9
+#define JPE 0xea
 #define XCHG 0xeb
 #define CPE 0xec
 #define XRI 0xee

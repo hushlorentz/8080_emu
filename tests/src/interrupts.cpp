@@ -19,8 +19,8 @@ TEST_CASE("Testing interrupt op codes")
     cpu.processProgram();
     cpu.handleInterrupt(RST_1);
     REQUIRE(cpu.stackPointer == 0xfffe);
-    REQUIRE(cpu.memory[0xffff] == 0x1);
-    REQUIRE(cpu.memory[0xfffe] == 0);
+    REQUIRE(cpu.memory[0xfffe] == 0x1);
+    REQUIRE(cpu.memory[0xffff] == 0);
 
     cpu.processProgram();
     REQUIRE(cpu.registerC == 0x1);
