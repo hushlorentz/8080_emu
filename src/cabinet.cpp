@@ -120,21 +120,58 @@ void Cabinet::mainLoop()
       {
         running = false;
       }
+      else if (event.type == SDL_KEYDOWN)
+      {
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_c:
+            hardware.buttonPressed(BUTTON_COIN);
+            break;
+          case SDLK_s:
+            hardware.buttonPressed(BUTTON_START);
+            break;
+          case SDLK_SPACE:
+            hardware.buttonPressed(BUTTON_SHOOT);
+            break;
+          case SDLK_LEFT:
+            hardware.buttonPressed(BUTTON_LEFT);
+            break;
+          case SDLK_RIGHT:
+            hardware.buttonPressed(BUTTON_RIGHT);
+            break;
+        }
+      }
+      else if (event.type == SDL_KEYUP)
+      {
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_c:
+            hardware.buttonReleased(BUTTON_COIN);
+            break;
+          case SDLK_s:
+            hardware.buttonReleased(BUTTON_START);
+            break;
+          case SDLK_SPACE:
+            hardware.buttonReleased(BUTTON_SHOOT);
+            break;
+          case SDLK_LEFT:
+            hardware.buttonReleased(BUTTON_LEFT);
+            break;
+          case SDLK_RIGHT:
+            hardware.buttonReleased(BUTTON_RIGHT);
+            break;
+        }
+      }
     }
 
     SDL_RenderClear(renderer);
 
-    //57344 = bits in video
-    //7168 = bytes in video
-    //224 x 256 = resolution bits
-    //28 x 32 = resolution bytes
-
     int index = 0;
     for (vector<uint8_t>::iterator it = cpu.memory.begin() + (0x4000 - 1); it >= cpu.memory.begin() + 0x2400; --it) {
 
-      for (int p=7; p>=0; p--)
+      for (int p = 7; p >= 0; p--)
       {
-        if (*it & (1<<p))
+        if (*it & (1 << p))
         {
           SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
         }
