@@ -13,3 +13,5 @@ This project has a badly written Makefile that builds two projects.
 There are a number of errors in the dependencies in the Makefile, such that editing cpu.cpp, and running make may lead to seg faults. Sorry, I'm terrible at make! Doing 'make clean && make' will always produce a correct binary.
 
 The test framework I used is Catch. It is included in the project and documentation can be found here https://github.com/catchorg/Catch2
+
+I followed this guide http://www.emulator101.com/ and the 8080 programming manual.
