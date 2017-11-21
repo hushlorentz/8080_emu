@@ -21,7 +21,7 @@ class CPU
     bool allClear();
     bool runProgram;
     void loadProgram(uint8_t *program, uint16_t programSize);
-    uint8_t processProgram();
+    void processProgram();
     uint8_t registerA;
     uint8_t registerB;
     uint8_t registerC;
@@ -44,6 +44,8 @@ class CPU
     map<uint8_t, vector<uint8_t *> *> registerPairMap;
     void handleInterrupt(uint8_t opCode);
     void setPortHandler(PortHandler *handler);
+    uint32_t elapsedCycles();
+    void resetElapsedCycles();
 
   private:
     uint8_t interruptToHandle;
@@ -52,6 +54,7 @@ class CPU
     bool halt;
     PortHandler *portHandler;
     vector<uint8_t> lastThousand;
+    uint32_t cycles;
     void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);
     void clearStatus(uint8_t bit);

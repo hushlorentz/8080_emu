@@ -105,13 +105,13 @@ void Cabinet::mainLoop()
       nextInterrupt = now + 8333;
     }
 
-    long long cycles = 0;
-    long long elapsedTime = now - last;
-    long long numCycles = elapsedTime * cyclesPerMicrosecond;
+    uint32_t elapsedTime = now - last;
+    uint32_t targetCycles = elapsedTime * cyclesPerMicrosecond;
+    cpu.resetElapsedCycles();
 
-    while (cycles < numCycles)
+    while (cpu.elapsedCycles() < targetCycles)
     {
-      cycles += cpu.processProgram();
+      cpu.processProgram();
     }
 
     while (SDL_PollEvent(&event)) 
@@ -148,7 +148,6 @@ void Cabinet::mainLoop()
         int updatedX = originalY;
         int updatedY = 256 - originalX;
         SDL_Rect fillRect = { 224 - updatedX, 256 - updatedY, 1, 1 };
-        //SDL_Rect fillRect = { originalX, originalY, 1, 1 };
         SDL_RenderFillRect(renderer, &fillRect);
         index++;
       }

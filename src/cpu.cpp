@@ -26,29 +26,7 @@ using namespace std;
 #define MAX_MEMORY 65536
 #define NO_INTERRUPT 0xff
 
-unsigned char cycles[] = {
-	4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x00..0x0f
-	4, 10, 7, 5, 5, 5, 7, 4, 4, 10, 7, 5, 5, 5, 7, 4, //0x10..0x1f
-	4, 10, 16, 5, 5, 5, 7, 4, 4, 10, 16, 5, 5, 5, 7, 4, //etc
-	4, 10, 13, 5, 10, 10, 10, 4, 4, 10, 13, 5, 5, 5, 7, 4,
-
-	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5, //0x40..0x4f
-	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
-	5, 5, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 7, 5,
-	7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 7, 5,
-
-	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4, //0x80..8x4f
-	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
-	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
-	4, 4, 4, 4, 4, 4, 7, 4, 4, 4, 4, 4, 4, 4, 7, 4,
-
-	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11, //0xc0..0xcf
-	11, 10, 10, 10, 17, 11, 7, 11, 11, 10, 10, 10, 10, 17, 7, 11,
-	11, 10, 10, 18, 17, 11, 7, 11, 11, 5, 10, 5, 17, 17, 7, 11,
-	11, 10, 10, 4, 17, 11, 7, 11, 11, 5, 10, 4, 17, 17, 7, 11,
-};
-
-CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false), portHandler(NULL)
+CPU::CPU() : followJumps(true), runProgram(true), registerA(0), registerB(0), registerC(0), registerD(0), registerE(0), registerH(0), registerL(0),  stackPointer(MAX_MEMORY), status(0x02), programCounter(0), stepThrough(false), interruptToHandle(NO_INTERRUPT), programLength(0), ignoreInterrupts(false), halt(false), portHandler(NULL), cycles(0)
 {
   memory.resize(MAX_MEMORY);
 
@@ -107,17 +85,13 @@ void CPU::loadProgram(uint8_t *program, uint16_t programSize)
   memcpy(memory.data(), program, programSize);
 }
 
-uint8_t CPU::processProgram()
+void CPU::processProgram()
 {
-  uint8_t instructionCycles = cycles[memory[programCounter]];
-
   do
   {
     handleNextInstruction();
   }
   while (programCounter < programLength && runProgram && !stepThrough);
-
-  return instructionCycles;
 }
 
 void CPU::handleNextInstruction()
@@ -178,6 +152,7 @@ void CPU::handleNextInstruction()
       break;
     case PCHL:
       programCounter = followJumps ? handleJumpByteOp() : programCounter + 1;
+      cycles += 5;
       break;
     case JC:
     case JNC:
@@ -244,66 +219,87 @@ void CPU::handleByteOp(uint8_t opCode)
       case MOV_L_L:
       case MOV_A_A:
       case NOP:
+        cycles += 4;
         break;
       case INR_B:
         incrementRegister(&registerB);
+        cycles += 5;
         break;  
       case INR_C:
         incrementRegister(&registerC);
+        cycles += 5;
         break;  
       case INR_D:
         incrementRegister(&registerD);
+        cycles += 5;
         break;  
       case INR_E:
         incrementRegister(&registerE);
+        cycles += 5;
         break;  
       case INR_H:
         incrementRegister(&registerH);
+        cycles += 5;
         break;  
       case INR_L:
         incrementRegister(&registerL);
+        cycles += 5;
         break;  
       case INR_A:
         incrementRegister(&registerA);
+        cycles += 5;
         break;  
       case INR_M:
         incrementRegisterM();
+        cycles += 10;
         break;  
       case STC:
         setStatus(CARRY_BIT);
+        cycles += 4;
         break;
       case DCR_B:
         decrementRegister(&registerB);
+        cycles += 5;
         break;
       case DCR_C:
         decrementRegister(&registerC);
+        cycles += 5;
         break;
       case DCR_D:
         decrementRegister(&registerD);
+        cycles += 5;
         break;
       case DCR_E:
         decrementRegister(&registerE);
+        cycles += 5;
         break;
       case DCR_H:
         decrementRegister(&registerH);
+        cycles += 5;
         break;
       case DCR_L:
         decrementRegister(&registerL);
+        cycles += 5;
         break;
       case DCR_A:
         decrementRegister(&registerA);
+        cycles += 5;
         break;
       case DCR_M:
         decrementRegisterM();
+        cycles += 10;
         break;
       case CMC:
         flipStatusBit(CARRY_BIT);
+        cycles += 4;
         break;
       case CMA:
         complimentAccumulator();
+        cycles += 4;
         break;
       case DAA:
         decimalAdjustAccumulator();  
+        cycles += 4;
         break;
       case MOV_B_C:
       case MOV_B_D:
@@ -365,15 +361,19 @@ void CPU::handleByteOp(uint8_t opCode)
         break;  
       case LDX_B:
         moveMemoryToAccumulator(registerB, registerC);  
+        cycles += 7;
         break;
       case LDX_D:
         moveMemoryToAccumulator(registerD, registerE);  
+        cycles += 7;
         break;
       case STAX_B:
         moveAccumulatorToMemory(registerB, registerC);  
+        cycles += 7;
         break;
       case STAX_D:
         moveAccumulatorToMemory(registerD, registerE);  
+        cycles += 7;
         break;
       case ADD_B:
       case ADD_C:
@@ -383,9 +383,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case ADD_L:
       case ADD_A:
         addValueToAccumulator(*registerMap[opCode & 7], 0);
+        cycles += 4;
         break;
       case ADD_M:
         addValueToAccumulator(registerM(), 0);
+        cycles += 7;
         break;
       case ADC_B:
       case ADC_C:
@@ -395,9 +397,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case ADC_L:
       case ADC_A:
         addValueToAccumulator(registerValueFromOpCode(opCode), carryBitSet() ? 1 : 0);
+        cycles += 4;
         break;
       case ADC_M:
         addValueToAccumulator(registerM(), carryBitSet() ? 1 : 0);
+        cycles += 7;
         break;
       case SUB_B:
       case SUB_C:
@@ -407,9 +411,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case SUB_L:
       case SUB_A:
         subtractValueFromAccumulator(registerValueFromOpCode(opCode));
+        cycles += 4;
         break;  
       case SUB_M:
         subtractValueFromAccumulator(registerM());
+        cycles += 7;
         break;
       case SBB_B:
       case SBB_C:
@@ -419,9 +425,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case SBB_L:
       case SBB_A:
         subtractValueFromAccumulator(registerValueFromOpCode(opCode) + (carryBitSet() ? 1 : 0));
+        cycles += 4;
         break;
       case SBB_M:
         subtractValueFromAccumulator(registerM() + (carryBitSet() ? 1 : 0));
+        cycles += 7;
         break;
       case ANA_B:
       case ANA_C:
@@ -431,9 +439,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case ANA_L:
       case ANA_A:
         logicalANDWithAccumulator(registerValueFromOpCode(opCode));  
+        cycles += 4;
         break;
       case ANA_M:
         logicalANDWithAccumulator(registerM());  
+        cycles += 7;
         break;
       case XRA_B:
       case XRA_C:
@@ -443,9 +453,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case XRA_L:
       case XRA_A:
         logicalXORWithAccumulator(registerValueFromOpCode(opCode));  
+        cycles += 4;
         break;
       case XRA_M:
         logicalXORWithAccumulator(registerM());
+        cycles += 7;
         break;
       case ORA_B:
       case ORA_C:
@@ -455,9 +467,11 @@ void CPU::handleByteOp(uint8_t opCode)
       case ORA_L:
       case ORA_A:
         logicalORWithAccumulator(registerValueFromOpCode(opCode));  
+        cycles += 4;
         break;
       case ORA_M:
         logicalORWithAccumulator(registerM());
+        cycles += 7;
         break;
       case CMP_B:
       case CMP_C:
@@ -467,77 +481,98 @@ void CPU::handleByteOp(uint8_t opCode)
       case CMP_L:
       case CMP_A:
         compareValueToAccumulator(registerValueFromOpCode(opCode));
+        cycles += 4;
         break;
       case CMP_M:  
         compareValueToAccumulator(registerM());
+        cycles += 7;
         break;
       case RLC:
         rotateAccumulatorLeft();
+        cycles += 4;
         break;  
       case RRC:
         rotateAccumulatorRight();
+        cycles += 4;
         break;
       case RAL:
         rotateAccumulatorLeftWithCarry();
+        cycles += 4;
         break;  
       case RAR:
         rotateAccumulatorRightWithCarry();
+        cycles += 4;
         break;  
       case PUSH_B:
       case PUSH_D:
       case PUSH_H:
       case PUSH_PSW:  
         pushRegisterPairOnStack(registerPairFromOpCode(opCode));
+        cycles += 11;
         break; 
       case POP_B:
       case POP_D:
       case POP_H:
         popStackToRegisterPair(registerPairFromOpCode(opCode));
+        cycles += 10;
         break;
       case POP_PSW:
         popStackToAccumulatorAndStatusPair();
+        cycles += 10;
         break;
       case DAD_B:
       case DAD_D:
       case DAD_H:
         addValueToRegisterPairH(valueOfRegisterPair(registerPairFromOpCode(opCode)));  
+        cycles += 10;
         break;
       case DAD_SP:
         addValueToRegisterPairH(stackPointer);
+        cycles += 10;
         break;
       case INX_B:
       case INX_D:
       case INX_H:
         incrementRegisterPair(registerPairFromOpCode(opCode));
+        cycles += 5;
         break;  
       case INX_SP:
         stackPointer++;
+        cycles += 5;
         break;  
       case DCX_B:  
       case DCX_D:  
       case DCX_H:  
         decrementRegisterPair(registerPairFromOpCode(opCode));
+        cycles += 5;
         break;
       case DCX_SP:
         stackPointer--;
+        cycles += 5;
         break;
       case XCHG:
         exchangeRegisterPairs(registerPairMap[REGISTER_PAIR_D], registerPairMap[REGISTER_PAIR_H]);  
+        cycles += 4;
         break;
       case XTHL:
         exchangeRegistersAndMemory();
+        cycles += 18;
         break;
       case SPHL:
         stackPointer = registerH << 8 | registerL;
+        cycles += 5;
         break;
       case DI:
         ignoreInterrupts = true;
+        cycles += 4;
         break;
       case EI:
         ignoreInterrupts = false;
+        cycles += 4;
         break;
       case HLT:
         halt = true;
+        cycles += 7;
         break;
       default:
         for (vector<uint8_t>::iterator it = lastThousand.begin(); it < lastThousand.end(); ++it)
@@ -694,15 +729,18 @@ void CPU::moveRegisterToRegister(uint8_t opCode)
 
   if (dst == REGISTER_M)
   {
-      memory[currentMemoryAddress()] = *registerMap[src];
+    memory[currentMemoryAddress()] = *registerMap[src];
+    cycles += 7;
   }
   else if (src == REGISTER_M)
   {
     *registerMap[dst] = memory[currentMemoryAddress()];
+    cycles += 7;
   }
   else
   {
     *registerMap[dst] = *registerMap[src];
+    cycles += 5;
   }
 }
 
@@ -898,23 +936,29 @@ void CPU::handle3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBytes)
     case LXI_D:
     case LXI_H:
       replaceRegisterPair(registerPairFromOpCode(opCode), highBytes, lowBytes);
+      cycles += 10;
       break;
     case LXI_SP:
       stackPointer = bytes;
+      cycles += 10;
       break;
     case STA:
       memory[bytes] = registerA;
+      cycles += 13;
       break;
     case LDA:
       registerA = memory[bytes];
+      cycles += 13;
       break;
     case SHLD:
       memory[bytes] = registerL;
       memory[bytes + 1] = registerH;
+      cycles += 16;
       break;
     case LXLD:
       registerL = memory[bytes];
       registerH = memory[bytes + 1];
+      cycles += 16;
       break;
   }
 }
@@ -937,39 +981,51 @@ void CPU::handle2ByteOp(uint8_t opCode, uint8_t value)
     case MVI_L:
     case MVI_A:
       *(registerMap[opCode >> 3 & 7]) = value;
+      cycles += 7;
       break;
     case MVI_M:
       memory[currentMemoryAddress()] = value;
+      cycles += 10;
       break;
     case ADI:
       addValueToAccumulator(value, 0);
+      cycles += 7;
       break;  
     case ACI:
       addValueToAccumulator(value, carryBitSet() ? 1 : 0);
+      cycles += 7;
       break;  
     case SUI:
       subtractValueFromAccumulator(value);
+      cycles += 7;
       break;
     case SBI:
       subtractValueFromAccumulator(value + (carryBitSet() ? 1 : 0));
+      cycles += 7;
       break;
     case ANI:
       logicalANDWithAccumulator(value);
+      cycles += 7;
       break;
     case XRI:
       logicalXORWithAccumulator(value);
+      cycles += 7;
       break;
     case ORI:
       logicalORWithAccumulator(value);
+      cycles += 7;
       break;
     case CPI:
       compareValueToAccumulator(value);  
+      cycles += 7;
       break;
     case IN:
       handleInputFromPort(memory[programCounter + 1]);
+      cycles += 10;
       break;
     case OUT:
       handleOutputToPort(memory[programCounter + 1]);
+      cycles += 10;
       break;
   }
 }
@@ -1016,6 +1072,7 @@ uint16_t CPU::handleJump3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBy
       break;
   }
 
+  cycles += 10;
   return jumpMemoryLocation;
 }
 
@@ -1035,30 +1092,39 @@ uint16_t CPU::handleCall3ByteOp(uint8_t opCode, uint8_t lowBytes, uint8_t highBy
   {
     case CALL:
       jumpMemoryLocation = performCallOperation(bytes);
+      cycles += 17;
       break;
     case CC:
       jumpMemoryLocation = carryBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += carryBitSet() ? 17 : 11;
       break;
     case CNC:
       jumpMemoryLocation = !carryBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += !carryBitSet() ? 17 : 11;
       break;
     case CZ:
       jumpMemoryLocation = zeroBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += zeroBitSet() ? 17 : 11;
       break;
     case CNZ:
       jumpMemoryLocation = !zeroBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += !zeroBitSet() ? 17 : 11;
       break;
     case CM:
       jumpMemoryLocation = signBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += signBitSet() ? 17 : 11;
       break;
     case CP:
       jumpMemoryLocation = !signBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += !signBitSet() ? 17 : 11;
       break;
     case CPE:
       jumpMemoryLocation = parityBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += parityBitSet() ? 17 : 11;
       break;
     case CPO:
       jumpMemoryLocation = !parityBitSet() ? performCallOperation(bytes) : programCounter + 3;
+      cycles += !parityBitSet() ? 17 : 11;
       break;
   }
 
@@ -1079,30 +1145,39 @@ uint16_t CPU::handleReturnOp(uint8_t opCode)
   {
     case RET:
       jumpMemoryLocation = pop2ByteValueFromStack();
+      cycles += 10;
       break;
     case RC:
       jumpMemoryLocation = carryBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += carryBitSet() ? 11 : 5;
       break;
     case RNC:
       jumpMemoryLocation = !carryBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += !carryBitSet() ? 11 : 5;
       break;
     case RZ:
       jumpMemoryLocation = zeroBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += zeroBitSet() ? 11 : 5;
       break;
     case RNZ:
       jumpMemoryLocation = !zeroBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += !zeroBitSet() ? 11 : 5;
       break;
     case RM:
       jumpMemoryLocation = signBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += signBitSet() ? 11 : 5;
       break;
     case RP:
       jumpMemoryLocation = !signBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += !signBitSet() ? 11 : 5;
       break;
     case RPE:
       jumpMemoryLocation = parityBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += parityBitSet() ? 11 : 5;
       break;
     case RPO:
       jumpMemoryLocation = !parityBitSet() ? pop2ByteValueFromStack() : programCounter + 1;
+      cycles += !parityBitSet() ? 11 : 5;
       break;
   }
 
@@ -1129,6 +1204,7 @@ void CPU::handleInterrupt(uint8_t opCode)
   interruptToHandle = opCode & 0x38;
   halt = false;
   ignoreInterrupts = true;
+  cycles += 11;
 }
 
 void CPU::setPortHandler(PortHandler *handler)
@@ -1154,4 +1230,14 @@ void CPU::handleOutputToPort(uint8_t portAddress)
   }
 
   portHandler->outputPortHandler(portAddress, registerA);
+}
+
+uint32_t CPU::elapsedCycles()
+{
+  return cycles;
+}
+
+void CPU::resetElapsedCycles()
+{
+  cycles = 0;
 }
