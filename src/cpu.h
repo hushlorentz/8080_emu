@@ -53,7 +53,6 @@ class CPU
     bool ignoreInterrupts;
     bool halt;
     PortHandler *portHandler;
-    vector<uint8_t> lastThousand;
     uint32_t cycles;
     void handleByteOp(uint8_t opCode);
     void setStatus(uint8_t bit);

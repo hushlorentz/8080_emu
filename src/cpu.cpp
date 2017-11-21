@@ -108,14 +108,6 @@ void CPU::handleNextInstruction()
     ignoreInterrupts = false;
   }
 
-  //cout << "OpCode: " << hex << (int)memory[programCounter] << endl;
-  lastThousand.push_back(memory[programCounter]);
-
-  if (lastThousand.size() > 1000)
-  {
-    lastThousand.erase(lastThousand.begin());
-  }
-
   switch (memory[programCounter])
   {
     case LXI_B:
@@ -575,11 +567,6 @@ void CPU::handleByteOp(uint8_t opCode)
         cycles += 7;
         break;
       default:
-        for (vector<uint8_t>::iterator it = lastThousand.begin(); it < lastThousand.end(); ++it)
-        {
-          printf("%02x ", (int)*it);
-        }
-        printf("\n");
         throw UnhandledOpCodeException(opCode);
         break;  
   }
